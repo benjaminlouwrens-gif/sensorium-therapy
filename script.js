@@ -1,30 +1,82 @@
 /* ============================================================
    Sensorium Therapy — interactions
-   1. Energy tree: scroll-driven 3D canvas (rotates + descends)
-   2. Glass cards revealed along the descent
-   3. Contact form (Formspree w/ mailto fallback)
-   4. Call button (tel: on touch devices, clipboard on desktop)
+   1. Theme toggle (dark mode — light sections only)
+   2. "Under construction" startup pop-up
+   3. Neuron centerpiece: scroll-driven 3D canvas (soma, dendrites,
+      axon, action-potential particles, bacteriophages, glass shards)
+   4. Glass cards orbiting the neuron, scroll-locked to center
+   5. Contact form (Formspree w/ mailto fallback)
    ============================================================ */
 
 /* ----------------------- CONFIG ----------------------- */
 const CONFIG = {
   email: "sanette@sensoriumtherapy.com",
-  // TODO: replace with Sanette's real number, e.g. "+19165551234"
-  phone: "",
-  phoneDisplay: "",
   // TODO: create a free form at https://formspree.io (sign in with
   // sanette@sensoriumtherapy.com) and paste the form ID here, e.g. "mqkrgwyz".
   // Until then the form falls back to opening the visitor's mail app.
   formspreeId: "",
 };
 
+/* ============================================================
+   THEME TOGGLE — dark mode affects the light sections only.
+   The neuron section is always dark and is untouched by this.
+   (The pre-paint attribute is set inline in <head> to avoid flash;
+    this block just wires the button + persistence.)
+   ============================================================ */
+(function initTheme() {
+  const btn = document.getElementById("themeToggle");
+  const root = document.documentElement;
+  function apply(theme) {
+    root.setAttribute("data-theme", theme);
+    if (btn) btn.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+  }
+  // initial: saved → else light
+  const saved = (() => { try { return localStorage.getItem("theme"); } catch { return null; } })();
+  apply(saved === "dark" ? "dark" : "light");
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+    const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    apply(next);
+    try { localStorage.setItem("theme", next); } catch {}
+  });
+})();
+
+/* ============================================================
+   UNDER-CONSTRUCTION POP-UP — once per browser session
+   ============================================================ */
+(function initNotice() {
+  const modal = document.getElementById("noticeModal");
+  if (!modal) return;
+  let seen = false;
+  try { seen = sessionStorage.getItem("noticeSeen") === "1"; } catch {}
+  if (seen) { modal.remove(); return; }
+
+  const close = () => {
+    modal.classList.remove("is-open");
+    try { sessionStorage.setItem("noticeSeen", "1"); } catch {}
+    setTimeout(() => modal.remove(), 300);
+    document.removeEventListener("keydown", onKey);
+  };
+  const onKey = (e) => { if (e.key === "Escape") close(); };
+
+  modal.querySelector(".notice__btn").addEventListener("click", close);
+  modal.querySelector(".notice__backdrop").addEventListener("click", close);
+  document.addEventListener("keydown", onKey);
+
+  // open after first paint, focus the button
+  requestAnimationFrame(() => {
+    modal.classList.add("is-open");
+    modal.querySelector(".notice__btn").focus();
+  });
+})();
+
 /* ----------------------- CARD DATA -----------------------
-   Ten branches, ordered canopy → roots: the descent moves from
-   expression down to the foundation of relational safety.       */
+   15 cards, three families: OT pillars, RELIA steps, methods.
+   Order is the narrative arc the orbit reveals as you scroll.   */
 const CARDS = [
   {
     tag: "ot", tagLabel: "OT · For Children", title: "Symbolic Capacity",
-    body: "At the canopy: imagination, language, and play. When the nervous system feels organized, children can represent feelings with ideas instead of behaviors — the highest branch of development.",
+    body: "Imagination, language, and play. When the nervous system feels organized, children can represent feelings with ideas instead of behaviors — the highest reach of development.",
   },
   {
     tag: "relia", tagLabel: "RELIA · A", title: "Attunement & Integration",
@@ -32,12 +84,20 @@ const CARDS = [
     quote: "Lasting change in how the nervous system reads the world, responds to stress, and experiences self and others.",
   },
   {
+    tag: "method", tagLabel: "Approach", title: "Developmental Approach",
+    body: "The through-line behind everything here: meeting each person at their current developmental capacities and gently building the next one — never drilling isolated skills out of context.",
+  },
+  {
     tag: "relia", tagLabel: "RELIA · I", title: "Identity",
-    body: "We honor who you are, not just what you do — rewriting stories like “I'm too much” or “I can't cope” in a compassionate, neurobiologically accurate way.",
+    body: "We honor who you are, not just what you do — rewriting stories like “I'm too much” or “I can't cope” in a more compassionate, neurobiologically accurate way.",
   },
   {
     tag: "ot", tagLabel: "OT · For Children", title: "Emotional Regulation",
     body: "Big feelings need a body that can hold them. We build the capacity to ride waves of emotion — up into excitement, down into calm — without tipping into overwhelm.",
+  },
+  {
+    tag: "method", tagLabel: "Method · DIR", title: "DIR Floortime®",
+    body: "Following a child's lead through play to climb developmental ladders, building capacities inside warm, attuned relationship. A foundation of Sanette's play-based work that she continues to deepen.",
   },
   {
     tag: "relia", tagLabel: "RELIA · L", title: "Listening",
@@ -45,7 +105,7 @@ const CARDS = [
     quote: "Instead of drowning in sensations and emotions, you start to understand them and respond more flexibly.",
   },
   {
-    tag: "shared", tagLabel: "Tomatis® · Both Pathways", title: "Neuro-Auditory Listening",
+    tag: "method", tagLabel: "Method · Tomatis®", title: "Neuro-Auditory Listening",
     body: "Carefully filtered music delivered through the ears and the bones of the head gently retunes the ear–brain connection — organizing sound, balance, and inner body cues.",
   },
   {
@@ -53,12 +113,24 @@ const CARDS = [
     body: "Touch, movement, sound, and gravity must become one coherent picture. Through play-based sensory work, scattered input starts to make sense — and the world feels less overwhelming.",
   },
   {
+    tag: "method", tagLabel: "Method · Exploring", title: "HeartMath®",
+    body: "Heart-rate-variability biofeedback that trains coherence between heart and brain, nudging the autonomic system toward calm — an approach Sanette is exploring to support interoception and regulation.",
+  },
+  {
     tag: "relia", tagLabel: "RELIA · E", title: "Embodied",
     body: "We work through the body, not just the head — movement, posture, breath, and play create new regulated states, strengthening interoception: the felt sense of what's happening inside.",
   },
   {
+    tag: "method", tagLabel: "Method · Interactive Metronome®", title: "Rhythm & Timing",
+    body: "Interactive Metronome® training sharpens motor planning, attention, and the brain's internal clock — helping the body sequence and time itself with more ease.",
+  },
+  {
     tag: "ot", tagLabel: "OT · For Children", title: "Relational Safety",
-    body: "Near the roots: co-regulation. A child borrows calm from a safe adult long before they can make their own. Attachment-informed care makes every other branch possible.",
+    body: "Co-regulation comes first. A child borrows calm from a safe adult long before they can make their own. Attachment-informed care makes every other capacity possible.",
+  },
+  {
+    tag: "method", tagLabel: "Method · Exploring", title: "Sandplay",
+    body: "A tray of sand and miniature figures offers a free and protected space for the psyche to externalize and integrate what words can't reach — an approach Sanette is integrating.",
   },
   {
     tag: "relia", tagLabel: "RELIA · R", title: "Relational",
@@ -79,139 +151,192 @@ function cardHTML(c) {
 const desktopWrap = document.getElementById("treeCards");
 const mobileWrap = document.getElementById("treeCardsMobile");
 
-CARDS.forEach((c, i) => {
-  const el = document.createElement("article");
-  el.className = `tree-card tree-card--${i % 2 === 0 ? "left" : "right"}`;
-  el.innerHTML = cardHTML(c);
-  desktopWrap.appendChild(el);
-
-  const mEl = document.createElement("article");
-  mEl.className = "tree-card";
-  mEl.innerHTML = cardHTML(c);
-  mobileWrap.appendChild(mEl);
+CARDS.forEach((c) => {
+  if (desktopWrap) {
+    const el = document.createElement("article");
+    el.className = "tree-card";
+    el.innerHTML = cardHTML(c);
+    desktopWrap.appendChild(el);
+  }
+  if (mobileWrap) {
+    const mEl = document.createElement("article");
+    mEl.className = "tree-card";
+    mEl.innerHTML = cardHTML(c);
+    mobileWrap.appendChild(mEl);
+  }
 });
 
-const cardEls = Array.from(desktopWrap.children);
+const cardEls = desktopWrap ? Array.from(desktopWrap.children) : [];
 
 /* ============================================================
-   ENERGY TREE — canvas
-   A 3D tree of glowing branch curves. Scroll progress drives the
-   camera's descent from canopy to roots and the slow rotation;
-   particles flow along every branch continuously.
+   NEURON CENTERPIECE — canvas
+   A glowing soma with dendrites + a descending axon. Action
+   potentials flow along the fibres. Bacteriophages and glass
+   shards drift in the depth. Cards orbit on a scroll-locked ring.
    ============================================================ */
-(function initTree() {
+(function initNeuron() {
   const canvas = document.getElementById("treeCanvas");
   const section = document.querySelector(".tree");
   const intro = document.getElementById("treeIntro");
   if (!canvas || !section) return;
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reduceMotion) return; // CSS already swaps to the static fallback
+  if (reduceMotion) return; // CSS swaps to the static fallback
 
   const ctx = canvas.getContext("2d");
   let W = 0, H = 0, DPR = 1;
 
-  /* ---------- geometry ---------- */
-  const TREE_H = 1000;            // world height of the tree
-  const N_BRANCHES = CARDS.length;
-  const branches = [];            // each: array of {x,y,z} points
-  let trunk = [];
-
-  // Deterministic pseudo-random so the tree is identical every load
+  // Deterministic pseudo-random so the scene is identical every load
   let seed = 7;
   const rand = () => {
     seed = (seed * 16807) % 2147483647;
     return (seed - 1) / 2147483646;
   };
 
-  function buildTree() {
-    // Trunk: gentle S-curve up the Y axis
-    trunk = [];
-    const T_PTS = 80;
-    for (let i = 0; i <= T_PTS; i++) {
-      const t = i / T_PTS;
-      trunk.push({
-        x: Math.sin(t * Math.PI * 2.2) * 26 * Math.sin(t * Math.PI),
-        y: t * TREE_H,
-        z: Math.cos(t * Math.PI * 1.7) * 18 * Math.sin(t * Math.PI),
+  /* ---------- geometry ---------- */
+  const dendrites = [];   // each: array of {x,y,z}
+  const twiglets = [];    // small dendrite branchlets
+  let axon = [];          // long descending fibre
+  const axonTerminals = [];
+  const soma = { x: 0, y: 0, z: 0, r: 46 };
+
+  function buildBranch(origin, dir, length, segs, curl, droop) {
+    // dir = {ax: azimuth, el: elevation}; returns a point list
+    const pts = [];
+    for (let j = 0; j <= segs; j++) {
+      const t = j / segs;
+      const out = length * Math.pow(t, 0.9);
+      const wob = Math.sin(t * Math.PI * 1.3 + curl) * 26;
+      pts.push({
+        x: origin.x + Math.cos(dir.ax) * out * Math.cos(dir.el) + Math.cos(dir.ax + 1.6) * wob * t,
+        y: origin.y + Math.sin(dir.el) * out + droop * Math.pow(t, 1.6) + Math.sin(curl + t * 4) * 6,
+        z: origin.z + Math.sin(dir.ax) * out * Math.cos(dir.el) + Math.sin(dir.ax + 1.6) * wob * t,
       });
     }
+    return pts;
+  }
 
-    // Branches: card i lives at descending heights (canopy → roots)
-    for (let i = 0; i < N_BRANCHES; i++) {
-      const hFrac = 0.92 - (i / (N_BRANCHES - 1)) * 0.78; // 0.92 → 0.14
-      const baseY = hFrac * TREE_H;
-      const azimuth = i * 2.39996 + rand() * 0.5; // golden-angle spread
-      const len = 200 + rand() * 90 + (1 - hFrac) * 60;
-      const lift = 90 + rand() * 80;
-      const pts = [];
-      const B_PTS = 46;
-      // find trunk point at baseY for the branch origin
-      const tp = trunk[Math.round(hFrac * (trunk.length - 1))];
-      for (let j = 0; j <= B_PTS; j++) {
-        const t = j / B_PTS;
-        const out = len * Math.pow(t, 0.85);
-        const curl = Math.sin(t * Math.PI * 1.1) * 30;
-        pts.push({
-          x: tp.x + Math.cos(azimuth) * out + Math.cos(azimuth + 1.7) * curl * t,
-          y: baseY + lift * Math.pow(t, 1.4) - 14 * t,
-          z: tp.z + Math.sin(azimuth) * out + Math.sin(azimuth + 1.7) * curl * t,
-        });
+  function buildNeuron() {
+    dendrites.length = 0; twiglets.length = 0; axonTerminals.length = 0;
+    // Dendrites: radiate up & out from the soma
+    const N_DEND = 8;
+    for (let i = 0; i < N_DEND; i++) {
+      const ax = i * 2.39996 + rand() * 0.4;          // golden-angle spread
+      const el = 0.25 + rand() * 0.95;                // mostly upward
+      const len = 210 + rand() * 120;
+      const pts = buildBranch(soma, { ax, el }, len, 40, rand() * 6, -30 - rand() * 20);
+      dendrites.push(pts);
+      // branchlets near the tip
+      const nTw = 2 + Math.floor(rand() * 2);
+      for (let k = 0; k < nTw; k++) {
+        const base = pts[Math.round(pts.length * (0.6 + k * 0.13))];
+        const tax = ax + (rand() - 0.5) * 2.2;
+        const tel = el + (rand() - 0.5) * 0.8;
+        twiglets.push(buildBranch(base, { ax: tax, el: tel }, 60 + rand() * 60, 16, rand() * 6, -10));
       }
-      // small twigs off the branch tip
-      const twigs = [];
-      for (let k = 0; k < 3; k++) {
-        const start = pts[Math.round(B_PTS * (0.55 + k * 0.15))];
-        const ta = azimuth + (rand() - 0.5) * 2.4;
-        const tl = 40 + rand() * 50;
-        const tw = [];
-        for (let j = 0; j <= 14; j++) {
-          const t = j / 14;
-          tw.push({
-            x: start.x + Math.cos(ta) * tl * t,
-            y: start.y + (30 + rand() * 20) * t,
-            z: start.z + Math.sin(ta) * tl * t,
-          });
-        }
-        twigs.push(tw);
-      }
-      branches.push({ pts, twigs, hFrac });
+    }
+    // Axon: one long fibre descending from the soma
+    axon = [];
+    const A_PTS = 90;
+    for (let j = 0; j <= A_PTS; j++) {
+      const t = j / A_PTS;
+      axon.push({
+        x: soma.x + Math.sin(t * Math.PI * 2.4) * 34 * Math.sin(t * Math.PI * 0.9),
+        y: soma.y - (60 + t * 470),                   // downward
+        z: soma.z + Math.cos(t * Math.PI * 1.8) * 24 * Math.sin(t * Math.PI * 0.9),
+      });
+    }
+    // Axon terminal arbor at the bottom
+    const tip = axon[axon.length - 1];
+    for (let i = 0; i < 6; i++) {
+      const ax = i * 1.05 + rand();
+      axonTerminals.push(buildBranch(tip, { ax, el: -0.6 - rand() * 0.7 }, 70 + rand() * 60, 16, rand() * 6, -24));
     }
   }
-  buildTree();
+  buildNeuron();
 
-  /* ---------- particles ---------- */
+  const fibres = [...dendrites, ...twiglets, axon, ...axonTerminals];
+
+  /* ---------- bacteriophages (decorative) ---------- */
+  const PHAGES = [];
+  for (let i = 0; i < 4; i++) {
+    PHAGES.push({
+      x: (rand() - 0.5) * 1100,
+      y: (rand() - 0.5) * 900,
+      z: 300 + rand() * 700,        // deep background
+      scale: 0.5 + rand() * 0.7,
+      spin: rand() * Math.PI,
+      spinV: (rand() - 0.5) * 0.004,
+      driftY: 0.05 + rand() * 0.08,
+    });
+  }
+
+  /* ---------- glass shards (Smash Hit feel) ---------- */
+  const SHARDS = [];
+  for (let i = 0; i < 13; i++) {
+    const verts = [];
+    const n = 3 + Math.floor(rand() * 3);
+    const rr = 16 + rand() * 30;
+    for (let k = 0; k < n; k++) {
+      const a = (k / n) * Math.PI * 2 + rand() * 0.6;
+      const r = rr * (0.6 + rand() * 0.6);
+      verts.push({ x: Math.cos(a) * r, y: Math.sin(a) * r });
+    }
+    SHARDS.push({
+      x: (rand() - 0.5) * 1200,
+      y: (rand() - 0.5) * 1000,
+      z: 120 + rand() * 760,
+      verts,
+      spin: rand() * Math.PI * 2,
+      spinV: (rand() - 0.5) * 0.01,
+      driftY: 0.04 + rand() * 0.1,
+      sparkle: rand() * Math.PI * 2,
+    });
+  }
+
+  /* ---------- glow sprites (avoid per-frame gradient allocation) ---------- */
+  function makeGlow(rgb) {
+    const s = 64;
+    const off = document.createElement("canvas");
+    off.width = off.height = s;
+    const octx = off.getContext("2d");
+    const g = octx.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
+    g.addColorStop(0, `rgba(${rgb},0.9)`);
+    g.addColorStop(0.4, `rgba(${rgb},0.25)`);
+    g.addColorStop(1, `rgba(${rgb},0)`);
+    octx.fillStyle = g;
+    octx.fillRect(0, 0, s, s);
+    return off;
+  }
+  const GLOW_BLUE = makeGlow("180,230,255");
+  const GLOW_PINK = makeGlow("232,83,127");
+
+  /* ---------- particles (action potentials) ---------- */
   const PARTICLES = [];
-  const N_PARTICLES = 150;
-  const allPaths = [trunk, ...branches.map(b => b.pts)];
-  for (let i = 0; i < N_PARTICLES; i++) {
+  for (let i = 0; i < 150; i++) {
+    const onAxon = rand() < 0.4;
     PARTICLES.push({
-      path: allPaths[Math.floor(rand() * allPaths.length)],
+      path: onAxon ? axon : fibres[Math.floor(rand() * fibres.length)],
       t: rand(),
-      speed: 0.0012 + rand() * 0.0025,
+      // dendrites carry signal inward (toward soma → reverse); axon outward (down)
+      dir: onAxon ? 1 : -1,
+      speed: 0.0016 + rand() * 0.003,
       size: 1 + rand() * 2.2,
-      pink: rand() < 0.12, // occasional pink spark (logo heart accent)
+      pink: rand() < 0.12,
     });
   }
 
   /* ---------- camera / projection ---------- */
-  let scrollP = 0;      // 0..1 through the section
-  let rotation = 0;     // current rotation (rad)
-  let idle = 0;         // idle drift time
-
-  const FOCAL = 760;
+  let scrollP = 0;
+  let idle = 0;
+  const FOCAL = 780;
 
   function project(p, camY, rot) {
     const cos = Math.cos(rot), sin = Math.sin(rot);
     const x = p.x * cos - p.z * sin;
     const z = p.x * sin + p.z * cos;
-    const scale = FOCAL / (FOCAL + z + 420);
-    return {
-      x: W / 2 + x * scale,
-      y: H / 2 - (p.y - camY) * scale,
-      scale,
-      z,
-    };
+    const scale = FOCAL / (FOCAL + z + 460);
+    return { x: W / 2 + x * scale, y: H / 2 - (p.y - camY) * scale, scale, z };
   }
 
   function resize() {
@@ -225,7 +350,6 @@ const cardEls = Array.from(desktopWrap.children);
   resize();
   window.addEventListener("resize", resize);
 
-  /* ---------- scroll tracking ---------- */
   function readScroll() {
     const rect = section.getBoundingClientRect();
     const total = rect.height - window.innerHeight;
@@ -234,7 +358,7 @@ const cardEls = Array.from(desktopWrap.children);
   window.addEventListener("scroll", readScroll, { passive: true });
   readScroll();
 
-  /* ---------- drawing ---------- */
+  /* ---------- drawing helpers ---------- */
   function strokePath(pts, camY, rot, width, color, growT) {
     const n = Math.max(2, Math.floor(pts.length * growT));
     ctx.beginPath();
@@ -248,93 +372,194 @@ const cardEls = Array.from(desktopWrap.children);
     ctx.strokeStyle = color;
     ctx.lineWidth = width * prevScale;
     ctx.lineCap = "round";
+    ctx.lineJoin = "round";
     ctx.stroke();
   }
 
-  // Branch i reveals while the camera passes its height window
-  function branchReveal(i) {
-    const center = (i + 1) / (N_BRANCHES + 1);
-    const d = (scrollP - (center - 0.09)) / 0.07;
-    return Math.min(1, Math.max(0, d));
+  function drawPhage(ph, camY, rot) {
+    const pr = project(ph, camY, rot);
+    if (pr.scale <= 0) return;
+    const s = pr.scale * ph.scale * 26;
+    ctx.save();
+    ctx.translate(pr.x, pr.y);
+    ctx.rotate(ph.spin);
+    ctx.strokeStyle = "rgba(150,205,240,0.22)";
+    ctx.fillStyle = "rgba(80,150,200,0.06)";
+    ctx.lineWidth = 1.1;
+    // icosahedral head (hexagon)
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) {
+      const a = (i / 6) * Math.PI * 2 - Math.PI / 2;
+      const x = Math.cos(a) * s, y = Math.sin(a) * s - s * 1.1;
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    // internal facets
+    ctx.beginPath();
+    ctx.moveTo(0, -s * 2.1); ctx.lineTo(0, -s * 0.1);
+    ctx.moveTo(-s * 0.86, -s * 1.6); ctx.lineTo(s * 0.86, -s * 0.6);
+    ctx.moveTo(s * 0.86, -s * 1.6); ctx.lineTo(-s * 0.86, -s * 0.6);
+    ctx.stroke();
+    // tail
+    ctx.beginPath();
+    ctx.moveTo(0, -s * 0.1); ctx.lineTo(0, s * 1.5);
+    ctx.stroke();
+    // baseplate
+    ctx.beginPath();
+    ctx.moveTo(-s * 0.6, s * 1.5); ctx.lineTo(s * 0.6, s * 1.5);
+    ctx.stroke();
+    // legs
+    for (let i = -1; i <= 1; i++) {
+      ctx.beginPath();
+      ctx.moveTo(i * 0.4 * s, s * 1.5);
+      ctx.lineTo(i * 1.1 * s, s * 2.6);
+      ctx.lineTo(i * 1.5 * s, s * 2.3);
+      ctx.stroke();
+    }
+    ctx.restore();
   }
 
-  function draw(now) {
-    idle = now * 0.001;
-    rotation = idle * 0.07 + scrollP * Math.PI * 3; // slow idle + 1.5 turns over descent
+  function drawShard(sh, camY, rot) {
+    const pr = project(sh, camY, rot);
+    if (pr.scale <= 0) return;
+    const s = pr.scale * 1.1;
+    ctx.save();
+    ctx.translate(pr.x, pr.y);
+    ctx.rotate(sh.spin);
+    ctx.scale(s, s);
+    ctx.beginPath();
+    sh.verts.forEach((v, i) => { i ? ctx.lineTo(v.x, v.y) : ctx.moveTo(v.x, v.y); });
+    ctx.closePath();
+    const g = ctx.createLinearGradient(-20, -20, 20, 20);
+    g.addColorStop(0, "rgba(190,235,255,0.10)");
+    g.addColorStop(0.5, "rgba(120,190,235,0.04)");
+    g.addColorStop(1, "rgba(210,245,255,0.12)");
+    ctx.fillStyle = g;
+    ctx.fill();
+    ctx.strokeStyle = "rgba(205,240,255,0.34)";
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+    // specular glint
+    const sp = (Math.sin(sh.sparkle) + 1) / 2;
+    if (sp > 0.6) {
+      ctx.beginPath();
+      ctx.arc(sh.verts[0].x, sh.verts[0].y, 1.6, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${(sp - 0.6) * 1.6})`;
+      ctx.fill();
+    }
+    ctx.restore();
+  }
 
-    // Camera descends the tree: canopy (high) → roots (low)
-    const camY = TREE_H * (0.88 - scrollP * 0.82);
+  /* ---------- main loop ---------- */
+  function draw(now) {
+    try {
+    idle = now * 0.001;
+    const rot = idle * 0.06;                 // gentle idle self-rotation
+    const camY = soma.y + 120 - scrollP * 120; // subtle scroll drift
 
     ctx.clearRect(0, 0, W, H);
 
-    // faint ground-fog glow near the bottom of the viewport
-    const fog = ctx.createRadialGradient(W / 2, H * 0.95, 0, W / 2, H * 0.95, W * 0.55);
-    fog.addColorStop(0, "rgba(43,143,196,0.10)");
+    // ground glow
+    const fog = ctx.createRadialGradient(W / 2, H * 0.6, 0, W / 2, H * 0.6, W * 0.6);
+    fog.addColorStop(0, "rgba(43,143,196,0.12)");
     fog.addColorStop(1, "rgba(43,143,196,0)");
     ctx.fillStyle = fog;
     ctx.fillRect(0, 0, W, H);
 
     ctx.globalCompositeOperation = "lighter";
 
-    // trunk: layered strokes = soft glow
-    strokePath(trunk, camY, rotation, 13, "rgba(43,143,196,0.10)", 1);
-    strokePath(trunk, camY, rotation, 6, "rgba(127,196,232,0.22)", 1);
-    strokePath(trunk, camY, rotation, 2.2, "rgba(220,243,255,0.65)", 1);
-
-    // branches grow in as their card approaches
-    branches.forEach((b, i) => {
-      const g = 0.25 + branchReveal(i) * 0.75; // partially visible even before reveal
-      strokePath(b.pts, camY, rotation, 8, "rgba(43,143,196,0.08)", g);
-      strokePath(b.pts, camY, rotation, 3.5, "rgba(127,196,232,0.20)", g);
-      strokePath(b.pts, camY, rotation, 1.4, "rgba(220,243,255,0.55)", g);
-      if (g > 0.85) {
-        b.twigs.forEach(tw => {
-          strokePath(tw, camY, rotation, 1, "rgba(180,225,250,0.4)", (g - 0.85) / 0.15);
-        });
-      }
+    // depth backdrop: phages then shards (far → near sorting is approximate)
+    PHAGES.forEach((ph) => {
+      ph.spin += ph.spinV;
+      ph.y += ph.driftY;
+      if (ph.y > 600) ph.y = -600;
+      drawPhage(ph, camY, rot);
+    });
+    SHARDS.forEach((sh) => {
+      sh.spin += sh.spinV;
+      sh.sparkle += 0.05;
+      sh.y += sh.driftY;
+      if (sh.y > 620) sh.y = -620;
+      drawShard(sh, camY, rot);
     });
 
+    // soma
+    const sp = project(soma, camY, rot);
+    const pulse = 0.85 + Math.sin(idle * 1.6) * 0.15;
+    const sr = soma.r * sp.scale * pulse;
+    const sg = ctx.createRadialGradient(sp.x, sp.y, 0, sp.x, sp.y, sr * 2.4);
+    sg.addColorStop(0, "rgba(225,245,255,0.9)");
+    sg.addColorStop(0.3, "rgba(127,196,232,0.5)");
+    sg.addColorStop(1, "rgba(43,143,196,0)");
+    ctx.fillStyle = sg;
+    ctx.beginPath();
+    ctx.arc(sp.x, sp.y, sr * 2.4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // dendrites + twiglets (layered glow)
+    const drawFibre = (pts, w1, w2, w3) => {
+      strokePath(pts, camY, rot, w1, "rgba(43,143,196,0.09)", 1);
+      strokePath(pts, camY, rot, w2, "rgba(127,196,232,0.22)", 1);
+      strokePath(pts, camY, rot, w3, "rgba(220,243,255,0.6)", 1);
+    };
+    dendrites.forEach((d) => drawFibre(d, 8, 3.6, 1.5));
+    twiglets.forEach((t) => strokePath(t, camY, rot, 1.1, "rgba(185,228,250,0.42)", 1));
+
+    // axon (slightly brighter trunk) + terminals
+    drawFibre(axon, 11, 5, 2.1);
+    axonTerminals.forEach((t) => strokePath(t, camY, rot, 1.3, "rgba(185,228,250,0.5)", 1));
+
     // particles
-    PARTICLES.forEach(pt => {
+    PARTICLES.forEach((pt) => {
       pt.t += pt.speed;
       if (pt.t > 1) pt.t = 0;
-      const idx = Math.min(pt.path.length - 1, Math.floor(pt.t * (pt.path.length - 1)));
-      const pr = project(pt.path[idx], camY, rotation);
+      const u = pt.dir > 0 ? pt.t : 1 - pt.t;
+      const idx = Math.min(pt.path.length - 1, Math.floor(u * (pt.path.length - 1)));
+      const pr = project(pt.path[idx], camY, rot);
       if (pr.y < -40 || pr.y > H + 40) return;
-      const r = pt.size * pr.scale * 2.4;
-      const grad = ctx.createRadialGradient(pr.x, pr.y, 0, pr.x, pr.y, r * 3);
-      const core = pt.pink ? "rgba(232,83,127," : "rgba(180,230,255,";
-      grad.addColorStop(0, core + "0.9)");
-      grad.addColorStop(0.4, core + "0.25)");
-      grad.addColorStop(1, core + "0)");
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(pr.x, pr.y, r * 3, 0, Math.PI * 2);
-      ctx.fill();
+      const R = pt.size * pr.scale * 7.2;          // glow radius
+      const sprite = pt.pink ? GLOW_PINK : GLOW_BLUE;
+      ctx.drawImage(sprite, pr.x - R, pr.y - R, R * 2, R * 2);
     });
 
     ctx.globalCompositeOperation = "source-over";
 
-    /* ---------- cards: fade in, drift up, rotate past ---------- */
+    /* ---------- orbiting cards (scroll-locked) ---------- */
+    const N = cardEls.length;
+    const Rx = Math.min(W * 0.30, 360);     // horizontal orbit radius
     cardEls.forEach((el, i) => {
-      const center = (i + 1) / (N_BRANCHES + 1);
-      const halfWin = 0.045;
-      const d = (scrollP - center) / halfWin; // -1..1 visible window
-      const vis = Math.max(0, 1 - Math.abs(d) * Math.abs(d)); // smooth bell
-      el.style.opacity = vis.toFixed(3);
-      const drift = -d * 90; // moves up as you pass it
-      const tilt = d * 14;   // gently rotates past you
+      // each card front-centers once across the section
+      const a = (i / N) * Math.PI * 2 - scrollP * Math.PI * 2;
+      const ca = Math.cos(a);               // +1 front, -1 back
+      const sa = Math.sin(a);
+      const depth = (ca + 1) / 2;           // 0 back → 1 front
+      const x = sa * Rx;
+      const yBack = (1 - depth) * 120;      // back cards sink toward bottom
+      const scale = 0.58 + depth * 0.5;     // 0.58 → 1.08
+      const rotY = -sa * 22;                // turn with the orbit
+      // emphasise the front card: ease opacity sharply
+      const opacity = Math.pow(depth, 2.2) * 0.96 + 0.04;
+      const blur = (1 - depth) * 5;
+      el.style.opacity = opacity.toFixed(3);
+      el.style.filter = blur > 0.4 ? `blur(${blur.toFixed(1)}px)` : "none";
+      el.style.zIndex = String(100 + Math.round(depth * 100));
       el.style.transform =
-        `translateY(calc(-50% + ${drift.toFixed(1)}px)) perspective(900px) rotateY(${tilt.toFixed(1)}deg)`;
-      el.style.pointerEvents = vis > 0.5 ? "auto" : "none";
+        `translate(-50%, -50%) translate(${x.toFixed(1)}px, ${yBack.toFixed(1)}px) ` +
+        `scale(${scale.toFixed(3)}) perspective(1000px) rotateY(${rotY.toFixed(1)}deg)`;
+      el.style.pointerEvents = depth > 0.82 ? "auto" : "none";
     });
 
-    // intro fades out as the descent begins
+    // intro fades as the descent begins
     if (intro) {
-      const introVis = Math.max(0, 1 - scrollP / 0.05);
+      const introVis = Math.max(0, 1 - scrollP / 0.04);
       intro.style.opacity = introVis.toFixed(3);
     }
 
+    } catch (err) {
+      /* one bad frame shouldn't kill the loop */
+    }
     requestAnimationFrame(draw);
   }
   requestAnimationFrame(draw);
@@ -380,59 +605,11 @@ const cardEls = Array.from(desktopWrap.children);
         status.classList.add("is-error");
       }
     } else {
-      // Free fallback: open the visitor's mail app pre-filled
       const subject = encodeURIComponent(`Website inquiry — ${service}`);
       const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nInterested in: ${service}\n\n${message}`);
       window.location.href = `mailto:${CONFIG.email}?subject=${subject}&body=${body}`;
       status.textContent = "Your email app should open — just press send. Sanette will be in touch within 24 hours.";
     }
-  });
-})();
-
-/* ============================================================
-   CALL BUTTON — tel: on touch devices, clipboard on desktop
-   ============================================================ */
-(function initCall() {
-  const buttons = [document.getElementById("callBtnNav"), document.getElementById("callBtnMain")].filter(Boolean);
-  if (!buttons.length) return;
-
-  const toast = document.createElement("div");
-  toast.className = "toast";
-  document.body.appendChild(toast);
-  let toastTimer;
-
-  function showToast(msg) {
-    toast.textContent = msg;
-    toast.classList.add("is-visible");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove("is-visible"), 2600);
-  }
-
-  const isTouch = matchMedia("(pointer: coarse)").matches;
-
-  buttons.forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      if (!CONFIG.phone) {
-        // Phone not configured yet — fall back to email so the button still helps
-        try {
-          await navigator.clipboard.writeText(CONFIG.email);
-          showToast("Email copied: " + CONFIG.email);
-        } catch {
-          window.location.href = "mailto:" + CONFIG.email;
-        }
-        return;
-      }
-      if (isTouch) {
-        window.location.href = "tel:" + CONFIG.phone;
-      } else {
-        try {
-          await navigator.clipboard.writeText(CONFIG.phoneDisplay || CONFIG.phone);
-          showToast("Number copied: " + (CONFIG.phoneDisplay || CONFIG.phone));
-        } catch {
-          showToast((CONFIG.phoneDisplay || CONFIG.phone));
-        }
-      }
-    });
   });
 })();
 

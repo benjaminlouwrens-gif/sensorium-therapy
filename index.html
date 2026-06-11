@@ -15,14 +15,39 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="styles.css">
+
+  <!-- set theme before paint to avoid a flash -->
+  <script>
+    try {
+      if (localStorage.getItem("theme") === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    } catch (e) {}
+  </script>
 </head>
 <body>
+
+  <!-- ================= UNDER-CONSTRUCTION NOTICE ================= -->
+  <div class="notice" id="noticeModal" role="dialog" aria-modal="true" aria-labelledby="noticeTitle">
+    <div class="notice__backdrop"></div>
+    <div class="notice__card" role="document">
+      <span class="notice__badge">In Development</span>
+      <h2 id="noticeTitle">This website is under construction</h2>
+      <p>
+        Sensorium Therapy's site is still being built. Information here may be incomplete,
+        not yet final, or inaccurate — please don't rely on it as official guidance just yet.
+        Thanks for your patience while we polish things up.
+      </p>
+      <button class="btn btn--primary notice__btn" type="button">Got it</button>
+    </div>
+  </div>
 
   <!-- ======================= NAV ======================= -->
   <header class="nav" id="top">
     <a class="nav__brand" href="#top">
       <img src="assets/logo-sensorium.png" alt="Sensorium Therapy logo">
       <span>Sensorium <em>Therapy</em></span>
+      <span class="nav__devbadge">In Development</span>
     </a>
     <nav class="nav__links">
       <a href="#parents">For Parents</a>
@@ -31,10 +56,14 @@
       <a href="#about">About</a>
       <a href="#contact">Contact</a>
     </nav>
-    <button class="btn btn--call" id="callBtnNav" type="button">
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-      <span>Call</span>
+    <button class="nav__theme" id="themeToggle" type="button" aria-label="Toggle dark mode" aria-pressed="false" title="Toggle dark mode">
+      <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     </button>
+    <a class="btn btn--call" id="emailBtnNav" href="mailto:sanette@sensoriumtherapy.com">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+      <span>Email</span>
+    </a>
   </header>
 
   <!-- ======================= HERO ======================= -->
@@ -221,7 +250,7 @@
       <div class="tree__intro" id="treeIntro">
         <p class="tree__eyebrow">The Approach</p>
         <h2>One nervous system.<br>Many pathways.</h2>
-        <p>Scroll to descend the Sensorium tree — from expression, down to the roots of safety.</p>
+        <p>Scroll to orbit the neuron — each pathway and method circles into focus, then makes way for the next.</p>
         <span class="tree__scrollhint" aria-hidden="true">▾</span>
       </div>
       <div class="tree__cards" id="treeCards"><!-- cards injected by script.js --></div>
@@ -300,14 +329,13 @@
         </form>
 
         <div class="contact__aside">
-          <h3>Prefer to talk?</h3>
-          <p>Sanette is happy to answer questions by phone.</p>
-          <button class="btn btn--call btn--call-lg" id="callBtnMain" type="button">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            <span id="callBtnLabel">Call Sanette</span>
-          </button>
+          <h3>Prefer email?</h3>
+          <p>Reach Sanette directly — she'll reply personally.</p>
+          <a class="btn btn--call btn--call-lg" href="mailto:sanette@sensoriumtherapy.com">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+            <span>Email Sanette</span>
+          </a>
           <p class="contact__email">
-            Or email directly:<br>
             <a href="mailto:sanette@sensoriumtherapy.com">sanette@sensoriumtherapy.com</a>
           </p>
           <p class="contact__note">
