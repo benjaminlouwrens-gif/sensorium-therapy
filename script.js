@@ -193,11 +193,19 @@ const cardEls = desktopWrap ? Array.from(desktopWrap.children) : [];
     return (seed - 1) / 2147483646;
   };
 
-  /* ---------- geometry ---------- */
+  /* ---------- geometry ----------
+     The neuron is stretched into a tall trunk. The cards' branches
+     sprout in a helix down the axon — a screw thread: each branch
+     72° further round and one step lower than the last.            */
+  const N_CARDS = cardEls.length;
+  const STEP = 150;                 // vertical world-distance between thread turns
+  const DTHETA = (Math.PI * 2) / 5; // 72° per card → 5 cards per revolution
+  const HELIX_R = 250;              // branch length / card orbit radius
   const dendrites = [];   // each: array of {x,y,z}
   const twiglets = [];    // small dendrite branchlets
-  let axon = [];          // long descending fibre
+  let axon = [];          // long descending fibre (the trunk of the descent)
   const axonTerminals = [];
+  const helix = [];       // per card: { pts (branch), tip, theta, y }
   const soma = { x: 0, y: 0, z: 0, r: 46 };
 
   function buildBranch(origin, dir, length, segs, curl, droop) {
@@ -235,15 +243,16 @@ const cardEls = desktopWrap ? Array.from(desktopWrap.children) : [];
         twiglets.push(buildBranch(base, { ax: tax, el: tel }, 60 + rand() * 60, 16, rand() * 6, -10));
       }
     }
-    // Axon: one long fibre descending from the soma
+    // Axon: the tall trunk — runs the full descent past every thread turn
     axon = [];
-    const A_PTS = 90;
+    const A_PTS = 160;
+    const axonLen = (N_CARDS + 1.5) * STEP;           // covers all cards + tail
     for (let j = 0; j <= A_PTS; j++) {
       const t = j / A_PTS;
       axon.push({
-        x: soma.x + Math.sin(t * Math.PI * 2.4) * 34 * Math.sin(t * Math.PI * 0.9),
-        y: soma.y - (60 + t * 470),                   // downward
-        z: soma.z + Math.cos(t * Math.PI * 1.8) * 24 * Math.sin(t * Math.PI * 0.9),
+        x: soma.x + Math.sin(t * Math.PI * 5.2) * 30 * Math.sin(t * Math.PI * 0.9),
+        y: soma.y - (40 + t * axonLen),               // downward
+        z: soma.z + Math.cos(t * Math.PI * 4.1) * 22 * Math.sin(t * Math.PI * 0.9),
       });
     }
     // Axon terminal arbor at the bottom
@@ -252,10 +261,33 @@ const cardEls = desktopWrap ? Array.from(desktopWrap.children) : [];
       const ax = i * 1.05 + rand();
       axonTerminals.push(buildBranch(tip, { ax, el: -0.6 - rand() * 0.7 }, 70 + rand() * 60, 16, rand() * 6, -24));
     }
+    // Helix branches — the screw thread the cards ride
+    helix.length = 0;
+    for (let i = 0; i < N_CARDS; i++) {
+      const theta = i * DTHETA;
+      const yAtt = -(i + 1) * STEP;                   // attach height on the trunk
+      // trunk point nearest the attach height
+      const base = axon[Math.min(A_PTS, Math.max(0, Math.round(((-yAtt - 40) / axonLen) * A_PTS)))];
+      // tip sits on the thread ring (so it faces the camera when rotated to front)
+      const tipPt = { x: -HELIX_R * Math.sin(theta), y: yAtt, z: -HELIX_R * Math.cos(theta) };
+      const pts = [];
+      const B_PTS = 22;
+      const wig = rand() * 6;
+      for (let j = 0; j <= B_PTS; j++) {
+        const t = j / B_PTS;
+        const e = Math.pow(t, 1.08);
+        pts.push({
+          x: base.x + (tipPt.x - base.x) * e + Math.sin(wig + t * 5) * 9 * Math.sin(t * Math.PI),
+          y: base.y + (tipPt.y - base.y + 42) * e - 42 * Math.pow(t, 2.1) - 26 * Math.sin(t * Math.PI),
+          z: base.z + (tipPt.z - base.z) * e + Math.cos(wig + t * 4) * 9 * Math.sin(t * Math.PI),
+        });
+      }
+      helix.push({ pts, tip: tipPt, theta, y: yAtt });
+    }
   }
   buildNeuron();
 
-  const fibres = [...dendrites, ...twiglets, axon, ...axonTerminals];
+  const fibres = [...dendrites, ...twiglets, axon, ...axonTerminals, ...helix.map(h => h.pts)];
 
   /* ---------- bacteriophages (decorative) ---------- */
   const PHAGES = [];
@@ -452,12 +484,20 @@ const cardEls = desktopWrap ? Array.from(desktopWrap.children) : [];
     ctx.restore();
   }
 
-  /* ---------- main loop ---------- */
+  /* ---------- main loop ----------
+     The screw-thread descent: scroll drives both the camera's drop
+     down the trunk and the world's rotation, locked so card i's
+     branch is rotated to the front exactly when the camera reaches
+     its height. Upcoming cards wind up from below; passed cards
+     corkscrew away overhead.                                       */
+  const DESCENT = N_CARDS + 0.2;           // frontIdx range: -0.6 → N-0.4
   function draw(now) {
     try {
     idle = now * 0.001;
-    const rot = idle * 0.06;                 // gentle idle self-rotation
-    const camY = soma.y + 120 - scrollP * 120; // subtle scroll drift
+    const frontIdx = scrollP * DESCENT - 0.6;          // which card faces you
+    const sway = Math.sin(idle * 0.35) * 0.045;        // gentle idle sway
+    const rot = frontIdx * DTHETA + sway;              // thread rotation (scroll-locked)
+    const camY = -(frontIdx + 1) * STEP;               // camera height on the trunk
 
     ctx.clearRect(0, 0, W, H);
 
@@ -470,19 +510,19 @@ const cardEls = desktopWrap ? Array.from(desktopWrap.children) : [];
 
     ctx.globalCompositeOperation = "lighter";
 
-    // depth backdrop: phages then shards (far → near sorting is approximate)
+    // depth backdrop (drifts with the camera so it never gets left behind)
     PHAGES.forEach((ph) => {
       ph.spin += ph.spinV;
       ph.y += ph.driftY;
       if (ph.y > 600) ph.y = -600;
-      drawPhage(ph, camY, rot);
+      drawPhage({ x: ph.x, y: camY + ph.y, z: ph.z, scale: ph.scale, spin: ph.spin }, camY, rot * 0.3);
     });
     SHARDS.forEach((sh) => {
       sh.spin += sh.spinV;
       sh.sparkle += 0.05;
       sh.y += sh.driftY;
       if (sh.y > 620) sh.y = -620;
-      drawShard(sh, camY, rot);
+      drawShard({ ...sh, y: camY + sh.y }, camY, rot * 0.3);
     });
 
     // soma
@@ -511,6 +551,19 @@ const cardEls = desktopWrap ? Array.from(desktopWrap.children) : [];
     drawFibre(axon, 11, 5, 2.1);
     axonTerminals.forEach((t) => strokePath(t, camY, rot, 1.3, "rgba(185,228,250,0.5)", 1));
 
+    // helix branches — the screw thread; brighter as their card nears front
+    helix.forEach((h, i) => {
+      const u = frontIdx - i;                   // 0 = this branch faces you
+      const near = Math.max(0, 1 - Math.abs(u) / 3);
+      strokePath(h.pts, camY, rot, 7, `rgba(43,143,196,${(0.05 + near * 0.09).toFixed(3)})`, 1);
+      strokePath(h.pts, camY, rot, 3, `rgba(127,196,232,${(0.10 + near * 0.20).toFixed(3)})`, 1);
+      strokePath(h.pts, camY, rot, 1.3, `rgba(220,243,255,${(0.18 + near * 0.45).toFixed(3)})`, 1);
+      // glowing bud at the branch tip
+      const tp = project(h.tip, camY, rot);
+      const R = (3 + near * 7) * tp.scale * 3;
+      ctx.drawImage(GLOW_BLUE, tp.x - R, tp.y - R, R * 2, R * 2);
+    });
+
     // particles
     PARTICLES.forEach((pt) => {
       pt.t += pt.speed;
@@ -526,35 +579,36 @@ const cardEls = desktopWrap ? Array.from(desktopWrap.children) : [];
 
     ctx.globalCompositeOperation = "source-over";
 
-    /* ---------- orbiting cards (scroll-locked) ----------
-       Only the card nearest the front of the ring is prominent;
-       its immediate neighbours are faint ghosts sweeping in/out,
-       and everything further round is fully hidden. */
-    const N = cardEls.length;
-    const Rx = Math.min(W * 0.42, 520);     // horizontal sweep radius
+    /* ---------- cards on the screw thread ----------
+       Each card rides its branch tip. It winds up from below, sweeps
+       around the trunk, locks face-on at eye level, then corkscrews
+       away overhead. 2–3 upcoming panels stay visible on the thread. */
     cardEls.forEach((el, i) => {
-      // each card front-centers once across the section
-      let a = (i / N) * Math.PI * 2 - scrollP * Math.PI * 2;
-      a = Math.atan2(Math.sin(a), Math.cos(a));   // normalize to [-π, π]
-      const focus = Math.max(0, 1 - Math.abs(a) / 1.25); // 1 front → 0 at ~72°
-      const vis = Math.pow(focus, 3.2);            // sharp single-card emphasis
-      if (vis < 0.03) {
+      const u = frontIdx - i;                   // <0 below you (upcoming), 0 facing you, >0 passed
+      if (Math.abs(u) > 3.1) {                  // beyond the visible stretch of thread
         el.style.visibility = "hidden";
         el.style.opacity = "0";
         el.style.pointerEvents = "none";
         return;
       }
       el.style.visibility = "visible";
-      const x = Math.sin(a) * Rx;
-      const sink = (1 - vis) * 150;               // recedes low into the dark
-      const scale = 0.6 + vis * 0.46;
-      const rotY = -Math.sin(a) * 28;             // turns with the orbit
-      el.style.opacity = (vis * 0.97 + 0.03).toFixed(3);
-      el.style.zIndex = String(100 + Math.round(vis * 100));
+      const h = helix[i];
+      const pr = project(h.tip, camY, rot);     // true 3D spot on the thread
+      const dx = pr.x - W / 2;
+      const dy = pr.y - H / 2;
+      // screen angle around the trunk: 0 = front
+      let s = Math.atan2(Math.sin(h.theta - rot), Math.cos(h.theta - rot));
+      const frontness = (Math.cos(s) + 1) / 2;  // 1 front, 0 behind the trunk
+      const reach = Math.max(0, 1 - Math.abs(u) / 3.1);
+      const opacity = reach * (0.14 + 0.86 * Math.pow(frontness, 2.6));
+      const scale = pr.scale * (0.78 + Math.pow(frontness, 2) * 0.62);
+      const rotY = Math.max(-38, Math.min(38, -s * 32));
+      el.style.opacity = opacity.toFixed(3);
+      el.style.zIndex = String(100 + Math.round((1 - pr.z / (HELIX_R * 2)) * 60));
       el.style.transform =
-        `translate(-50%, -50%) translate(${x.toFixed(1)}px, ${sink.toFixed(1)}px) ` +
+        `translate(-50%, -50%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) ` +
         `scale(${scale.toFixed(3)}) perspective(1000px) rotateY(${rotY.toFixed(1)}deg)`;
-      el.style.pointerEvents = vis > 0.85 ? "auto" : "none";
+      el.style.pointerEvents = Math.abs(u) < 0.35 ? "auto" : "none";
     });
 
     // intro fades as the descent begins
