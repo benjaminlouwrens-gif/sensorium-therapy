@@ -409,8 +409,8 @@ a { color: var(--brand-deep); }
   border-radius: 20px;
   /* faceted refractive glass: diagonal sheen + soft tint */
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.03) 38%, rgba(127, 196, 232, 0.05) 60%, rgba(255, 255, 255, 0.12) 100%),
-    rgba(18, 40, 64, 0.34);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0.02) 38%, rgba(127, 196, 232, 0.04) 60%, rgba(255, 255, 255, 0.09) 100%),
+    rgba(14, 32, 52, 0.42);
   border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 20px;
   /* clipped bevel on the top-right corner — glass pane feel */

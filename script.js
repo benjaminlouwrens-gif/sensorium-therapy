@@ -526,29 +526,35 @@ const cardEls = desktopWrap ? Array.from(desktopWrap.children) : [];
 
     ctx.globalCompositeOperation = "source-over";
 
-    /* ---------- orbiting cards (scroll-locked) ---------- */
+    /* ---------- orbiting cards (scroll-locked) ----------
+       Only the card nearest the front of the ring is prominent;
+       its immediate neighbours are faint ghosts sweeping in/out,
+       and everything further round is fully hidden. */
     const N = cardEls.length;
-    const Rx = Math.min(W * 0.30, 360);     // horizontal orbit radius
+    const Rx = Math.min(W * 0.42, 520);     // horizontal sweep radius
     cardEls.forEach((el, i) => {
       // each card front-centers once across the section
-      const a = (i / N) * Math.PI * 2 - scrollP * Math.PI * 2;
-      const ca = Math.cos(a);               // +1 front, -1 back
-      const sa = Math.sin(a);
-      const depth = (ca + 1) / 2;           // 0 back → 1 front
-      const x = sa * Rx;
-      const yBack = (1 - depth) * 120;      // back cards sink toward bottom
-      const scale = 0.58 + depth * 0.5;     // 0.58 → 1.08
-      const rotY = -sa * 22;                // turn with the orbit
-      // emphasise the front card: ease opacity sharply
-      const opacity = Math.pow(depth, 2.2) * 0.96 + 0.04;
-      const blur = (1 - depth) * 5;
-      el.style.opacity = opacity.toFixed(3);
-      el.style.filter = blur > 0.4 ? `blur(${blur.toFixed(1)}px)` : "none";
-      el.style.zIndex = String(100 + Math.round(depth * 100));
+      let a = (i / N) * Math.PI * 2 - scrollP * Math.PI * 2;
+      a = Math.atan2(Math.sin(a), Math.cos(a));   // normalize to [-π, π]
+      const focus = Math.max(0, 1 - Math.abs(a) / 1.25); // 1 front → 0 at ~72°
+      const vis = Math.pow(focus, 3.2);            // sharp single-card emphasis
+      if (vis < 0.03) {
+        el.style.visibility = "hidden";
+        el.style.opacity = "0";
+        el.style.pointerEvents = "none";
+        return;
+      }
+      el.style.visibility = "visible";
+      const x = Math.sin(a) * Rx;
+      const sink = (1 - vis) * 150;               // recedes low into the dark
+      const scale = 0.6 + vis * 0.46;
+      const rotY = -Math.sin(a) * 28;             // turns with the orbit
+      el.style.opacity = (vis * 0.97 + 0.03).toFixed(3);
+      el.style.zIndex = String(100 + Math.round(vis * 100));
       el.style.transform =
-        `translate(-50%, -50%) translate(${x.toFixed(1)}px, ${yBack.toFixed(1)}px) ` +
+        `translate(-50%, -50%) translate(${x.toFixed(1)}px, ${sink.toFixed(1)}px) ` +
         `scale(${scale.toFixed(3)}) perspective(1000px) rotateY(${rotY.toFixed(1)}deg)`;
-      el.style.pointerEvents = depth > 0.82 ? "auto" : "none";
+      el.style.pointerEvents = vis > 0.85 ? "auto" : "none";
     });
 
     // intro fades as the descent begins
