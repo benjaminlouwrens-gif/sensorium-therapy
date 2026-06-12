@@ -690,7 +690,11 @@ const cardEls = desktopWrap ? Array.from(desktopWrap.children) : [];
       let scale = pr.scale * (0.78 + Math.pow(frontness, 2) * 0.62);
       if (IS_MOBILE) scale = Math.min(scale, 1.02);   // keep cards within a narrow screen
       const rotY = Math.max(-38, Math.min(38, -s * 32));
-      el.style.opacity = opacity.toFixed(3);
+      // The first card shares the screen with the intro at the very top — hold it
+      // hidden until the intro has faded (same 0→0.04 scroll window) so they
+      // cross-fade instead of overlapping before you start scrolling. Card 0 only.
+      const introHold = i === 0 ? Math.min(1, scrollP / 0.04) : 1;
+      el.style.opacity = (opacity * introHold).toFixed(3);
       el.style.zIndex = String(100 + Math.round((1 - pr.z / (HELIX_R * 2)) * 60));
       el.style.transform =
         `translate(-50%, -50%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) ` +
