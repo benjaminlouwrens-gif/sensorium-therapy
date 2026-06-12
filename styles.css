@@ -340,7 +340,7 @@ a { color: var(--brand-deep); }
 /* ---------------- Energy tree (desktop) ---------------- */
 .tree {
   position: relative;
-  height: 1500vh; /* scroll runway: ~100vh per card for the orbit (15 cards) */
+  height: 720vh; /* scroll runway: ~90vh per card on the helix (8 cards) */
   background: linear-gradient(180deg, var(--night-1) 0%, var(--night-2) 50%, var(--night-1) 100%);
 }
 
@@ -399,50 +399,66 @@ a { color: var(--brand-deep); }
 
 .tree__cards { position: absolute; inset: 0; pointer-events: none; }
 
-/* Crystalline glass card — orbits the neuron, JS positions it at center */
+/* Liquid Glass card — orbits the neuron, JS positions it at center.
+   Apple-style: heavy blur+saturation, luminous rim, inner glow, drifting sheen. */
 .tree-card {
   position: absolute;
   top: 50%;
   left: 50%;
   width: min(420px, 80vw);
-  padding: 1.7rem 1.9rem;
-  border-radius: 20px;
-  /* faceted refractive glass: diagonal sheen + soft tint */
+  padding: 1.75rem 1.95rem;
+  border-radius: 26px;
+  /* very translucent, lightly tinted glass body */
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0.02) 38%, rgba(127, 196, 232, 0.04) 60%, rgba(255, 255, 255, 0.09) 100%),
-    rgba(14, 32, 52, 0.42);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 20px;
-  /* clipped bevel on the top-right corner — glass pane feel */
-  clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%);
-  backdrop-filter: blur(18px) saturate(1.3);
-  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.03) 45%, rgba(127, 196, 232, 0.05) 70%, rgba(255, 255, 255, 0.10) 100%),
+    rgba(12, 28, 48, 0.30);
+  backdrop-filter: blur(30px) saturate(1.8);
+  -webkit-backdrop-filter: blur(30px) saturate(1.8);
   box-shadow:
-    0 18px 50px rgba(2, 8, 20, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35),
-    inset 0 0 30px rgba(127, 196, 232, 0.07);
+    0 24px 64px rgba(2, 8, 20, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 0 42px rgba(127, 196, 232, 0.12),
+    inset 0 -26px 46px rgba(10, 26, 46, 0.28);
   color: #f2fafd;
   opacity: 0;
   overflow: hidden;
   will-change: transform, opacity, filter;
 }
-/* slow specular sheen sweeping across the glass */
+/* luminous gradient rim light (refractive edge) */
 .tree-card::before {
   content: "";
   position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.2px;
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.75) 0%,
+    rgba(255, 255, 255, 0.06) 38%,
+    rgba(127, 196, 232, 0.18) 66%,
+    rgba(255, 255, 255, 0.55) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask-composite: exclude;
+  pointer-events: none;
+}
+/* slow specular sheen drifting across the glass */
+.tree-card::after {
+  content: "";
+  position: absolute;
   top: -60%;
-  left: -30%;
-  width: 60%;
+  left: -40%;
+  width: 55%;
   height: 220%;
-  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.28), transparent);
   transform: rotate(8deg);
-  animation: sheen 7s ease-in-out infinite;
+  animation: sheen 8s ease-in-out infinite;
   pointer-events: none;
 }
 @keyframes sheen {
-  0%, 100% { left: -40%; opacity: 0; }
-  45%, 55% { opacity: 0.8; }
-  70% { left: 120%; opacity: 0; }
+  0%, 100% { left: -45%; opacity: 0; }
+  45%, 55% { opacity: 0.85; }
+  72% { left: 125%; opacity: 0; }
 }
 
 .tree-card__tag {

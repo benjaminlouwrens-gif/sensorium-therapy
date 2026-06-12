@@ -71,12 +71,12 @@ const CONFIG = {
 })();
 
 /* ----------------------- CARD DATA -----------------------
-   15 cards, three families: OT pillars, RELIA steps, methods.
-   Order is the narrative arc the orbit reveals as you scroll.   */
+   8 cards, three families: 2 OT (merged), 5 RELIA steps, 1 methods.
+   Order is the narrative arc the helix reveals, canopy → root.    */
 const CARDS = [
   {
-    tag: "ot", tagLabel: "OT · For Children", title: "Symbolic Capacity",
-    body: "Imagination, language, and play. When the nervous system feels organized, children can represent feelings with ideas instead of behaviors — the highest reach of development.",
+    tag: "ot", tagLabel: "OT · For Children", title: "Relational Safety & Symbolic Growth",
+    body: "It begins with co-regulation — a child borrows calm from a safe adult long before they can make their own. From that attachment foundation grows the highest reach of development: imagination, language, and play.",
   },
   {
     tag: "relia", tagLabel: "RELIA · A", title: "Attunement & Integration",
@@ -84,20 +84,8 @@ const CARDS = [
     quote: "Lasting change in how the nervous system reads the world, responds to stress, and experiences self and others.",
   },
   {
-    tag: "method", tagLabel: "Approach", title: "Developmental Approach",
-    body: "The through-line behind everything here: meeting each person at their current developmental capacities and gently building the next one — never drilling isolated skills out of context.",
-  },
-  {
     tag: "relia", tagLabel: "RELIA · I", title: "Identity",
     body: "We honor who you are, not just what you do — rewriting stories like “I'm too much” or “I can't cope” in a more compassionate, neurobiologically accurate way.",
-  },
-  {
-    tag: "ot", tagLabel: "OT · For Children", title: "Emotional Regulation",
-    body: "Big feelings need a body that can hold them. We build the capacity to ride waves of emotion — up into excitement, down into calm — without tipping into overwhelm.",
-  },
-  {
-    tag: "method", tagLabel: "Method · DIR", title: "DIR Floortime®",
-    body: "Following a child's lead through play to climb developmental ladders, building capacities inside warm, attuned relationship. A foundation of Sanette's play-based work that she continues to deepen.",
   },
   {
     tag: "relia", tagLabel: "RELIA · L", title: "Listening",
@@ -105,32 +93,16 @@ const CARDS = [
     quote: "Instead of drowning in sensations and emotions, you start to understand them and respond more flexibly.",
   },
   {
-    tag: "method", tagLabel: "Method · Tomatis®", title: "Neuro-Auditory Listening",
-    body: "Carefully filtered music delivered through the ears and the bones of the head gently retunes the ear–brain connection — organizing sound, balance, and inner body cues.",
+    tag: "method", tagLabel: "Tools & Approaches", title: "Tools & Approaches",
+    body: "A developmental approach — meeting each person where they are and building the next capacity — woven through DIR Floortime® and warm, attuned play. Sanette also draws on Tomatis® neuro-auditory listening and Interactive Metronome® for rhythm and timing, and is integrating HeartMath® coherence and Sandplay to deepen the work.",
   },
   {
-    tag: "ot", tagLabel: "OT · For Children", title: "Sensory Integration",
-    body: "Touch, movement, sound, and gravity must become one coherent picture. Through play-based sensory work, scattered input starts to make sense — and the world feels less overwhelming.",
-  },
-  {
-    tag: "method", tagLabel: "Method · Exploring", title: "HeartMath®",
-    body: "Heart-rate-variability biofeedback that trains coherence between heart and brain, nudging the autonomic system toward calm — an approach Sanette is exploring to support interoception and regulation.",
+    tag: "ot", tagLabel: "OT · For Children", title: "Sensory & Emotional Regulation",
+    body: "Touch, movement, sound, and gravity become one coherent picture instead of scattered noise — and big feelings find a body that can hold them, riding the waves up into excitement and down into calm without tipping into overwhelm.",
   },
   {
     tag: "relia", tagLabel: "RELIA · E", title: "Embodied",
     body: "We work through the body, not just the head — movement, posture, breath, and play create new regulated states, strengthening interoception: the felt sense of what's happening inside.",
-  },
-  {
-    tag: "method", tagLabel: "Method · Interactive Metronome®", title: "Rhythm & Timing",
-    body: "Interactive Metronome® training sharpens motor planning, attention, and the brain's internal clock — helping the body sequence and time itself with more ease.",
-  },
-  {
-    tag: "ot", tagLabel: "OT · For Children", title: "Relational Safety",
-    body: "Co-regulation comes first. A child borrows calm from a safe adult long before they can make their own. Attachment-informed care makes every other capacity possible.",
-  },
-  {
-    tag: "method", tagLabel: "Method · Exploring", title: "Sandplay",
-    body: "A tray of sand and miniature figures offers a free and protected space for the psyche to externalize and integrate what words can't reach — an approach Sanette is integrating.",
   },
   {
     tag: "relia", tagLabel: "RELIA · R", title: "Relational",
@@ -292,14 +264,38 @@ const cardEls = desktopWrap ? Array.from(desktopWrap.children) : [];
   /* ---------- bacteriophages (decorative) ---------- */
   const PHAGES = [];
   for (let i = 0; i < 4; i++) {
+    const z = 380 + rand() * 720;          // deep background
     PHAGES.push({
       x: (rand() - 0.5) * 1100,
       y: (rand() - 0.5) * 900,
-      z: 300 + rand() * 700,        // deep background
-      scale: 0.5 + rand() * 0.7,
+      z,
+      scale: 0.45 + rand() * 0.5,
       spin: rand() * Math.PI,
-      spinV: (rand() - 0.5) * 0.004,
+      spinV: (rand() - 0.5) * 0.0035,
       driftY: 0.05 + rand() * 0.08,
+      alpha: 0.34 + (1 - z / 1100) * 0.3,  // nearer = a touch brighter
+    });
+  }
+
+  /* ---------- floating background neurons (atmosphere) ---------- */
+  const BG_NEURONS = [];
+  for (let i = 0; i < 6; i++) {
+    const nd = 5 + Math.floor(rand() * 2);          // dendrite count
+    const arms = [];
+    for (let k = 0; k < nd; k++) {
+      arms.push({ ang: (k / nd) * Math.PI * 2 + rand() * 0.6, len: 0.7 + rand() * 0.8 });
+    }
+    const z = 520 + rand() * 760;                   // further than phages
+    BG_NEURONS.push({
+      x: (rand() - 0.5) * 1400,
+      y: (rand() - 0.5) * 1100,
+      z,
+      scale: 0.5 + rand() * 0.8,
+      spin: rand() * Math.PI * 2,
+      spinV: (rand() - 0.5) * 0.0018,
+      driftY: 0.03 + rand() * 0.06,
+      arms,
+      alpha: 0.10 + (1 - z / 1280) * 0.12,          // very subtle
     });
   }
 
@@ -408,48 +404,127 @@ const cardEls = desktopWrap ? Array.from(desktopWrap.children) : [];
     ctx.stroke();
   }
 
+  function drawBgNeuron(nu, camY, rot) {
+    const pr = project(nu, camY, rot);
+    if (pr.scale <= 0) return;
+    const s = pr.scale * nu.scale * 30;
+    ctx.save();
+    ctx.translate(pr.x, pr.y);
+    ctx.rotate(nu.spin);
+    ctx.lineCap = "round";
+    // dendrite arms with a little branchlet
+    ctx.strokeStyle = `rgba(150,205,240,${nu.alpha.toFixed(3)})`;
+    ctx.lineWidth = 0.9 * pr.scale;
+    nu.arms.forEach((arm) => {
+      const ex = Math.cos(arm.ang) * s * arm.len;
+      const ey = Math.sin(arm.ang) * s * arm.len;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.quadraticCurveTo(ex * 0.5 - ey * 0.12, ey * 0.5 + ex * 0.12, ex, ey);
+      ctx.stroke();
+      // small fork at the tip
+      const fa = arm.ang + 0.5;
+      ctx.beginPath();
+      ctx.moveTo(ex, ey);
+      ctx.lineTo(ex + Math.cos(fa) * s * 0.22, ey + Math.sin(fa) * s * 0.22);
+      ctx.stroke();
+    });
+    // soma
+    const R = s * 0.5;
+    ctx.globalAlpha = nu.alpha * 2.4;
+    ctx.drawImage(GLOW_BLUE, -R, -R, R * 2, R * 2);
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+
   function drawPhage(ph, camY, rot) {
     const pr = project(ph, camY, rot);
     if (pr.scale <= 0) return;
-    const s = pr.scale * ph.scale * 26;
+    const s = pr.scale * ph.scale * 20;          // smaller, subtler than before
+    const a = ph.alpha != null ? ph.alpha : 0.5; // per-phage depth alpha
     ctx.save();
     ctx.translate(pr.x, pr.y);
     ctx.rotate(ph.spin);
-    ctx.strokeStyle = "rgba(150,205,240,0.22)";
-    ctx.fillStyle = "rgba(80,150,200,0.06)";
-    ctx.lineWidth = 1.1;
-    // icosahedral head (hexagon)
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    const rim = (o) => `rgba(168,222,255,${(o * a).toFixed(3)})`;
+    const hY = -s * 1.5;                           // head centre
+    const rH = s * 0.92;                           // capsid radius
+    const hexPt = (i, r, cy) => {
+      const ang = (i / 6) * Math.PI * 2 - Math.PI / 2;
+      return [Math.cos(ang) * r, Math.sin(ang) * r + cy];
+    };
+
+    // soft translucent capsid fill (faceted gem)
     ctx.beginPath();
-    for (let i = 0; i < 6; i++) {
-      const a = (i / 6) * Math.PI * 2 - Math.PI / 2;
-      const x = Math.cos(a) * s, y = Math.sin(a) * s - s * 1.1;
-      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
-    }
+    for (let i = 0; i < 6; i++) { const [x, y] = hexPt(i, rH, hY); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
     ctx.closePath();
+    const cg = ctx.createLinearGradient(-rH, hY - rH, rH, hY + rH);
+    cg.addColorStop(0, `rgba(205,240,255,${(0.14 * a).toFixed(3)})`);
+    cg.addColorStop(1, `rgba(90,160,210,${(0.04 * a).toFixed(3)})`);
+    ctx.fillStyle = cg;
     ctx.fill();
+    ctx.strokeStyle = rim(0.5);
+    ctx.lineWidth = 1.1 * pr.scale;
     ctx.stroke();
-    // internal facets
+
+    // three facet lines (3D read) — vertex to opposite vertex through centre
+    ctx.strokeStyle = rim(0.28);
+    ctx.lineWidth = 0.7 * pr.scale;
     ctx.beginPath();
-    ctx.moveTo(0, -s * 2.1); ctx.lineTo(0, -s * 0.1);
-    ctx.moveTo(-s * 0.86, -s * 1.6); ctx.lineTo(s * 0.86, -s * 0.6);
-    ctx.moveTo(s * 0.86, -s * 1.6); ctx.lineTo(-s * 0.86, -s * 0.6);
+    for (let i = 0; i < 3; i++) {
+      const [x1, y1] = hexPt(i, rH, hY);
+      const [x2, y2] = hexPt(i + 3, rH, hY);
+      ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+    }
     ctx.stroke();
-    // tail
+
+    // collar + slender tail sheath with rings
+    const tailTop = hY + rH * 0.95, tailBot = s * 1.25;
+    ctx.strokeStyle = rim(0.42);
+    ctx.lineWidth = 1.2 * pr.scale;
     ctx.beginPath();
-    ctx.moveTo(0, -s * 0.1); ctx.lineTo(0, s * 1.5);
+    ctx.moveTo(0, tailTop); ctx.lineTo(0, tailBot);
     ctx.stroke();
-    // baseplate
-    ctx.beginPath();
-    ctx.moveTo(-s * 0.6, s * 1.5); ctx.lineTo(s * 0.6, s * 1.5);
-    ctx.stroke();
-    // legs
-    for (let i = -1; i <= 1; i++) {
+    ctx.lineWidth = 0.7 * pr.scale;
+    ctx.strokeStyle = rim(0.3);
+    for (let k = 1; k <= 4; k++) {
+      const ry = tailTop + (tailBot - tailTop) * (k / 5);
       ctx.beginPath();
-      ctx.moveTo(i * 0.4 * s, s * 1.5);
-      ctx.lineTo(i * 1.1 * s, s * 2.6);
-      ctx.lineTo(i * 1.5 * s, s * 2.3);
+      ctx.moveTo(-s * 0.16, ry); ctx.lineTo(s * 0.16, ry);
       ctx.stroke();
     }
+
+    // small hexagonal baseplate
+    ctx.strokeStyle = rim(0.4);
+    ctx.lineWidth = 0.9 * pr.scale;
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) { const [x, y] = hexPt(i, s * 0.34, tailBot); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+    ctx.closePath();
+    ctx.stroke();
+
+    // six gracefully curved legs, symmetric
+    ctx.lineWidth = 0.9 * pr.scale;
+    for (let i = 0; i < 6; i++) {
+      const side = i < 3 ? -1 : 1;
+      const tier = i % 3;                           // 0,1,2 spread
+      const sx = side * s * 0.3;
+      const outX = side * s * (0.9 + tier * 0.45);
+      const kneeY = tailBot + s * 0.5;
+      const footY = tailBot + s * (1.15 - tier * 0.12);
+      ctx.strokeStyle = rim(0.34 - tier * 0.05);
+      ctx.beginPath();
+      ctx.moveTo(sx, tailBot);
+      ctx.quadraticCurveTo(side * s * 0.55, kneeY, outX, footY);
+      ctx.stroke();
+    }
+
+    // faint head glow (local space, centred on the capsid)
+    const gR = rH * 1.7;
+    ctx.globalAlpha = 0.32 * a;
+    ctx.drawImage(GLOW_BLUE, -gR, hY - gR, gR * 2, gR * 2);
+    ctx.globalAlpha = 1;
     ctx.restore();
   }
 
@@ -511,11 +586,17 @@ const cardEls = desktopWrap ? Array.from(desktopWrap.children) : [];
     ctx.globalCompositeOperation = "lighter";
 
     // depth backdrop (drifts with the camera so it never gets left behind)
+    BG_NEURONS.forEach((nu) => {
+      nu.spin += nu.spinV;
+      nu.y += nu.driftY;
+      if (nu.y > 700) nu.y = -700;
+      drawBgNeuron({ x: nu.x, y: camY + nu.y, z: nu.z, scale: nu.scale, spin: nu.spin, arms: nu.arms, alpha: nu.alpha }, camY, rot * 0.22);
+    });
     PHAGES.forEach((ph) => {
       ph.spin += ph.spinV;
       ph.y += ph.driftY;
       if (ph.y > 600) ph.y = -600;
-      drawPhage({ x: ph.x, y: camY + ph.y, z: ph.z, scale: ph.scale, spin: ph.spin }, camY, rot * 0.3);
+      drawPhage({ x: ph.x, y: camY + ph.y, z: ph.z, scale: ph.scale, spin: ph.spin, alpha: ph.alpha }, camY, rot * 0.3);
     });
     SHARDS.forEach((sh) => {
       sh.spin += sh.spinV;
