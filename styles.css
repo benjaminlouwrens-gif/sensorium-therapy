@@ -716,9 +716,19 @@ a { color: var(--brand-deep); }
 
   .footer__inner { grid-template-columns: 1fr 1fr; }
 
-  /* Animation off — cinematic stack on */
-  .tree { display: none; }
-  .tree-mobile { display: block; }
+  /* Neuron helix runs on mobile too. Lighten the runway + glass for phones.
+     (The static stack stays hidden here; it is the reduced-motion fallback.) */
+  .tree { height: 560vh; }                 /* ~70vh per card — less finger-scroll */
+  .tree-card {
+    width: min(420px, 86vw);
+    padding: 1.4rem 1.45rem;
+    border-radius: 22px;
+    backdrop-filter: blur(16px) saturate(1.5);
+    -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  }
+  .tree-card h3 { font-size: 1.18rem; }
+  .tree-card p { font-size: 0.9rem; }
+  .tree__intro h2 { font-size: clamp(1.8rem, 8vw, 2.6rem); }
 }
 
 @media (max-width: 560px) {

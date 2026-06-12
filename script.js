@@ -155,6 +155,11 @@ const cardEls = desktopWrap ? Array.from(desktopWrap.children) : [];
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (reduceMotion) return; // CSS swaps to the static fallback
 
+  // Phones run the same helix, but lighter: fewer particles, capped DPR,
+  // gentler geometry so cards stay on a narrow screen.
+  const IS_MOBILE = window.matchMedia("(max-width: 700px)").matches;
+  const QTY = IS_MOBILE ? 0.45 : 1;            // population multiplier
+
   const ctx = canvas.getContext("2d");
   let W = 0, H = 0, DPR = 1;
 
@@ -172,7 +177,7 @@ const cardEls = desktopWrap ? Array.from(desktopWrap.children) : [];
   const N_CARDS = cardEls.length;
   const STEP = 150;                 // vertical world-distance between thread turns
   const DTHETA = (Math.PI * 2) / 5; // 72° per card → 5 cards per revolution
-  const HELIX_R = 250;              // branch length / card orbit radius
+  const HELIX_R = IS_MOBILE ? 165 : 250;  // gentler swing keeps cards on a narrow screen
   const dendrites = [];   // each: array of {x,y,z}
   const twiglets = [];    // small dendrite branchlets
   let axon = [];          // long descending fibre (the trunk of the descent)
@@ -263,7 +268,7 @@ const cardEls = desktopWrap ? Array.from(desktopWrap.children) : [];
 
   /* ---------- bacteriophages (decorative) ---------- */
   const PHAGES = [];
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < Math.round(4 * QTY); i++) {
     const z = 380 + rand() * 720;          // deep background
     PHAGES.push({
       x: (rand() - 0.5) * 1100,
@@ -279,7 +284,7 @@ const cardEls = desktopWrap ? Array.from(desktopWrap.children) : [];
 
   /* ---------- floating background neurons (atmosphere) ---------- */
   const BG_NEURONS = [];
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < Math.round(6 * QTY); i++) {
     const nd = 5 + Math.floor(rand() * 2);          // dendrite count
     const arms = [];
     for (let k = 0; k < nd; k++) {
@@ -301,7 +306,7 @@ const cardEls = desktopWrap ? Array.from(desktopWrap.children) : [];
 
   /* ---------- glass shards (Smash Hit feel) ---------- */
   const SHARDS = [];
-  for (let i = 0; i < 13; i++) {
+  for (let i = 0; i < Math.round(13 * QTY); i++) {
     const verts = [];
     const n = 3 + Math.floor(rand() * 3);
     const rr = 16 + rand() * 30;
@@ -341,7 +346,7 @@ const cardEls = desktopWrap ? Array.from(desktopWrap.children) : [];
 
   /* ---------- particles (action potentials) ---------- */
   const PARTICLES = [];
-  for (let i = 0; i < 150; i++) {
+  for (let i = 0; i < Math.round(150 * QTY); i++) {
     const onAxon = rand() < 0.4;
     PARTICLES.push({
       path: onAxon ? axon : fibres[Math.floor(rand() * fibres.length)],
@@ -368,7 +373,7 @@ const cardEls = desktopWrap ? Array.from(desktopWrap.children) : [];
   }
 
   function resize() {
-    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    DPR = Math.min(window.devicePixelRatio || 1, IS_MOBILE ? 1.6 : 2);
     W = canvas.clientWidth;
     H = canvas.clientHeight;
     canvas.width = W * DPR;
@@ -682,7 +687,8 @@ const cardEls = desktopWrap ? Array.from(desktopWrap.children) : [];
       const frontness = (Math.cos(s) + 1) / 2;  // 1 front, 0 behind the trunk
       const reach = Math.max(0, 1 - Math.abs(u) / 3.1);
       const opacity = reach * (0.14 + 0.86 * Math.pow(frontness, 2.6));
-      const scale = pr.scale * (0.78 + Math.pow(frontness, 2) * 0.62);
+      let scale = pr.scale * (0.78 + Math.pow(frontness, 2) * 0.62);
+      if (IS_MOBILE) scale = Math.min(scale, 1.02);   // keep cards within a narrow screen
       const rotY = Math.max(-38, Math.min(38, -s * 32));
       el.style.opacity = opacity.toFixed(3);
       el.style.zIndex = String(100 + Math.round((1 - pr.z / (HELIX_R * 2)) * 60));
