@@ -646,6 +646,22 @@ a { color: var(--brand-deep); }
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 1.4rem;
 }
+.footer__credit {
+  max-width: 1020px;
+  margin: 0.9rem auto 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.4);
+}
+.footer__credit a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  transition: color 0.2s;
+}
+.footer__credit a:hover { color: var(--brand-light); }
 
 /* ---------------- Under-construction notice modal ---------------- */
 .notice {
