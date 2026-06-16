@@ -27,18 +27,26 @@
 </head>
 <body>
 
-  <!-- ================= UNDER-CONSTRUCTION NOTICE ================= -->
-  <div class="notice" id="noticeModal" role="dialog" aria-modal="true" aria-labelledby="noticeTitle">
+  <!-- ================= ENTRY CHOOSER (OT / RELIA) ================= -->
+  <div class="notice" id="entryModal" role="dialog" aria-modal="true" aria-labelledby="entryTitle">
     <div class="notice__backdrop"></div>
-    <div class="notice__card" role="document">
+    <div class="notice__card notice__card--entry" role="document">
       <span class="notice__badge">In Development</span>
-      <h2 id="noticeTitle">This website is under construction</h2>
-      <p>
-        Sensorium Therapy's site is still being built. Information here may be incomplete,
-        not yet final, or inaccurate — please don't rely on it as official guidance just yet.
-        Thanks for your patience while we polish things up.
+      <h2 id="entryTitle">Welcome — where shall we start?</h2>
+      <p>Sensorium Therapy offers two distinct paths. Choose one to begin; you can switch anytime up top.</p>
+      <div class="entry__choices">
+        <button class="entry__choice" type="button" data-choose="ot">
+          <strong>Occupational Therapy</strong>
+          <small>For children · sensory, emotional &amp; relational support · California</small>
+        </button>
+        <button class="entry__choice" type="button" data-choose="relia">
+          <strong>RELIA NeuroIntegration</strong>
+          <small>Neurointegrative coaching for adults · hybrid &amp; nationwide</small>
+        </button>
+      </div>
+      <p class="entry__note">
+        This site is still in development — information may be incomplete, not yet final, or inaccurate.
       </p>
-      <button class="btn btn--primary notice__btn" type="button">Got it</button>
     </div>
   </div>
 
@@ -49,9 +57,11 @@
       <span>Sensorium <em>Therapy</em></span>
       <span class="nav__devbadge">In Development</span>
     </a>
+    <div class="nav__tabs" role="tablist" aria-label="Choose a path">
+      <button class="nav__tab" type="button" role="tab" data-choose="ot" data-go="parents" aria-label="Occupational Therapy">OT</button>
+      <button class="nav__tab" type="button" role="tab" data-choose="relia" data-go="coaching" aria-label="RELIA NeuroIntegration">RELIA</button>
+    </div>
     <nav class="nav__links">
-      <a href="#parents">For Parents</a>
-      <a href="#coaching">Coaching</a>
       <a href="#approach">The Approach</a>
       <a href="#about">About</a>
       <a href="#contact">Contact</a>
@@ -69,23 +79,23 @@
   <!-- ======================= HERO ======================= -->
   <section class="hero">
     <div class="hero__inner">
-      <p class="hero__eyebrow">Neurointegrative Care · Sanette Louwrens, OTR/L</p>
-      <h1>Helping nervous systems feel <span class="hl">safe enough</span> to grow.</h1>
-      <p class="hero__sub">
+      <p class="hero__eyebrow" id="heroEyebrow">Neurointegrative Care · Sanette Louwrens, OTR/L</p>
+      <h1 id="heroTitle">Helping nervous systems feel <span class="hl">safe enough</span> to grow.</h1>
+      <p class="hero__sub" id="heroSub">
         Neuro-focused occupational therapy for children in California, and RELIA neurointegrative
         coaching for adults everywhere — grounded in the science of the vagus–body–brain connection.
       </p>
       <div class="hero__choice" role="group" aria-label="Choose your path">
-        <a class="choice choice--parent" href="#parents">
-          <span class="choice__label">I'm a Parent</span>
-          <span class="choice__desc">Occupational therapy for my child — sensory, emotional &amp; relational support. <strong>California</strong></span>
-        </a>
-        <a class="choice choice--coach" href="#coaching">
-          <span class="choice__label">I'm Seeking Coaching</span>
-          <span class="choice__desc">RELIA neurointegrative coaching for adults — hybrid &amp; <strong>nationwide</strong></span>
-        </a>
+        <button class="choice choice--parent" type="button" data-choose="ot" data-go="parents">
+          <span class="choice__label">Occupational Therapy</span>
+          <span class="choice__desc">For my child — sensory, emotional &amp; relational support. <strong>California</strong></span>
+        </button>
+        <button class="choice choice--coach" type="button" data-choose="relia" data-go="coaching">
+          <span class="choice__label">RELIA Coaching</span>
+          <span class="choice__desc">For adults — neurointegrative coaching, hybrid &amp; <strong>nationwide</strong></span>
+        </button>
       </div>
-      <p class="hero__hint">Not sure which fits? <a href="#approach">See how the approach works</a> — it's one philosophy, two pathways.</p>
+      <p class="hero__hint">One philosophy, two pathways — switch anytime from the menu up top.</p>
     </div>
     <div class="hero__glow" aria-hidden="true"></div>
   </section>
