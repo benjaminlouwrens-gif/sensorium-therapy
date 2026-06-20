@@ -662,6 +662,25 @@ a { color: var(--brand-deep); }
   transition: color 0.2s;
 }
 .footer__credit a:hover { color: var(--brand-light); }
+.footer__ip {
+  max-width: 1020px;
+  margin: 0.9rem auto 0;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.32);
+}
+.footer__ip a { color: rgba(255, 255, 255, 0.6); }
+/* the builder's mark — a small hand-drawn signature glyph */
+.coder-mark {
+  width: max-content;
+  margin: 1.3rem auto 0;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 7px;
+  line-height: 1.18;
+  white-space: pre;
+  color: rgba(255, 255, 255, 0.28);
+  user-select: none;
+}
 
 /* ---------------- Under-construction notice modal ---------------- */
 .notice {

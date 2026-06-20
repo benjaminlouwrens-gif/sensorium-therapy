@@ -884,3 +884,13 @@ document.addEventListener("click", (ev) => {
 
 /* ---------------- misc ---------------- */
 document.getElementById("year").textContent = new Date().getFullYear();
+var yearIp = document.getElementById("year-ip");
+if (yearIp) yearIp.textContent = new Date().getFullYear();
+
+/* Design & code provenance notice (SLOWEBDESIGN). Easily bypassed — a courtesy note. */
+try {
+  console.log(
+    "%cSite design & code © SLOWEBDESIGN. Reproduction or reuse (including restyled or reworded copies) without written permission is prohibited.\nLicensing: louwrensventures@gmail.com",
+    "color:#176291;font-size:13px;line-height:1.5;"
+  );
+} catch (e) { /* ignore */ }
