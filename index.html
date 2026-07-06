@@ -29,8 +29,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sensorium Therapy — Neurointegrative OT &amp; RELIA Coaching</title>
-  <meta name="description" content="Neuro-focused occupational therapy for children in California and RELIA neurointegrative coaching for adults nationwide. Sanette Louwrens, OTR/L — DIR Floortime Expert, Tomatis Level 4 Consultant.">
+  <title>Sensorium Therapy — Neuro-Focused Occupational Therapy for Children · California</title>
+  <meta name="description" content="Neuro-focused occupational therapy for children in California with Sanette Louwrens, OTR/L — DIR Floortime Expert, Tomatis Level 4 Consultant, Interactive Metronome. Sensory integration, emotional regulation, and attachment-informed care.">
 
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
@@ -53,26 +53,18 @@
 </head>
 <body>
 
-  <!-- ================= ENTRY CHOOSER (OT / RELIA) ================= -->
-  <div class="notice" id="entryModal" role="dialog" aria-modal="true" aria-labelledby="entryTitle">
+  <!-- ================= UNDER-CONSTRUCTION NOTICE ================= -->
+  <div class="notice" id="noticeModal" role="dialog" aria-modal="true" aria-labelledby="noticeTitle">
     <div class="notice__backdrop"></div>
-    <div class="notice__card notice__card--entry" role="document">
+    <div class="notice__card" role="document">
       <span class="notice__badge">In Development</span>
-      <h2 id="entryTitle">Welcome — where shall we start?</h2>
-      <p>Sensorium Therapy offers two distinct paths. Choose one to begin; you can switch anytime up top.</p>
-      <div class="entry__choices">
-        <button class="entry__choice" type="button" data-choose="ot">
-          <strong>Occupational Therapy</strong>
-          <small>For children · sensory, emotional &amp; relational support · California</small>
-        </button>
-        <button class="entry__choice" type="button" data-choose="relia">
-          <strong>RELIA NeuroIntegration</strong>
-          <small>Neurointegrative coaching for adults · hybrid &amp; nationwide</small>
-        </button>
-      </div>
-      <p class="entry__note">
-        This site is still in development — information may be incomplete, not yet final, or inaccurate.
+      <h2 id="noticeTitle">This website is under construction</h2>
+      <p>
+        Sensorium Therapy's site is still being built. Information here may be incomplete,
+        not yet final, or inaccurate — please don't rely on it as official guidance just yet.
+        Thanks for your patience while we polish things up.
       </p>
+      <button class="btn btn--primary notice__btn" type="button">Got it</button>
     </div>
   </div>
 
@@ -83,11 +75,8 @@
       <span>Sensorium <em>Therapy</em></span>
       <span class="nav__devbadge">In Development</span>
     </a>
-    <div class="nav__tabs" role="tablist" aria-label="Choose a path">
-      <button class="nav__tab" type="button" role="tab" data-choose="ot" data-go="parents" aria-label="Occupational Therapy">OT</button>
-      <button class="nav__tab" type="button" role="tab" data-choose="relia" data-go="coaching" aria-label="RELIA NeuroIntegration">RELIA</button>
-    </div>
     <nav class="nav__links">
+      <a href="#parents">For Parents</a>
       <a href="#approach">The Approach</a>
       <a href="#about">About</a>
       <a href="#contact">Contact</a>
@@ -105,23 +94,18 @@
   <!-- ======================= HERO ======================= -->
   <section class="hero">
     <div class="hero__inner">
-      <p class="hero__eyebrow" id="heroEyebrow">Neurointegrative Care · Sanette Louwrens, OTR/L</p>
-      <h1 id="heroTitle">Helping nervous systems feel <span class="hl">safe enough</span> to grow.</h1>
-      <p class="hero__sub" id="heroSub">
-        Neuro-focused occupational therapy for children in California, and RELIA neurointegrative
-        coaching for adults everywhere — grounded in the science of the vagus–body–brain connection.
+      <p class="hero__eyebrow">Occupational Therapy · For Children · California</p>
+      <h1>When your child's world feels <span class="hl">too much</span> — we help it make sense.</h1>
+      <p class="hero__sub">
+        Neuro-focused occupational therapy that works with your child's nervous system, not against
+        it — building regulation through sensory integration, emotional safety, attuned relationships,
+        and play.
       </p>
-      <div class="hero__choice" role="group" aria-label="Choose your path">
-        <button class="choice choice--parent" type="button" data-choose="ot" data-go="parents">
-          <span class="choice__label">Occupational Therapy</span>
-          <span class="choice__desc">For my child — sensory, emotional &amp; relational support. <strong>California</strong></span>
-        </button>
-        <button class="choice choice--coach" type="button" data-choose="relia" data-go="coaching">
-          <span class="choice__label">RELIA Coaching</span>
-          <span class="choice__desc">For adults — neurointegrative coaching, hybrid &amp; <strong>nationwide</strong></span>
-        </button>
+      <div class="hero__cta">
+        <a class="btn btn--primary btn--call-lg" href="#contact">Start the conversation</a>
+        <a class="btn btn--call btn--call-lg" href="#approach">See how it works</a>
       </div>
-      <p class="hero__hint">One philosophy, two pathways — switch anytime from the menu up top.</p>
+      <p class="hero__hint">Occupational therapy with Sanette Louwrens, OTR/L · DIR Floortime® Expert.</p>
     </div>
     <div class="hero__glow" aria-hidden="true"></div>
   </section>
@@ -192,93 +176,6 @@
     </div>
   </section>
 
-  <!-- ======================= COACHING / RELIA ======================= -->
-  <section class="section section--coaching" id="coaching">
-    <div class="section__inner">
-      <div class="coaching__head">
-        <img class="coaching__logo" src="assets/logo-relia.png" alt="RELIA NeuroIntegration logo">
-        <div>
-          <p class="section__eyebrow">For Adults · RELIA Coaching · Hybrid &amp; Nationwide</p>
-          <h2>RELIA NeuroIntegration Coaching</h2>
-        </div>
-      </div>
-
-      <p class="section__lead">
-        RELIA coaching is a neurointegrative change process. It combines attuned relationship,
-        body-based experiences, and reflective integration to help the nervous system feel safer,
-        more organized, and more connected in everyday life — strengthening the vagus–body–brain
-        connection and growing <em>interoception</em>: the ability to notice and respond to what is
-        happening inside.
-      </p>
-
-      <div class="relia">
-        <article class="relia__step">
-          <span class="relia__letter">R</span>
-          <h3>Relational</h3>
-          <p>We start with a real, safe-enough relationship — consistent, non-shaming, and attuned —
-             where your nervous system can begin to relax and feel seen.</p>
-          <blockquote>"Without relational safety, the nervous system will not risk new experiences."</blockquote>
-        </article>
-        <article class="relia__step">
-          <span class="relia__letter">E</span>
-          <h3>Embodied</h3>
-          <p>We work through the body, not just the head. Sessions use movement, posture, breath,
-             sensory input, and play to create new, regulated body states — strengthening interoception
-             in an intentional, relational context.</p>
-        </article>
-        <article class="relia__step">
-          <span class="relia__letter">L</span>
-          <h3>Listening</h3>
-          <p>We learn to listen inward and outward — noticing what the body says inside (tension,
-             energy, breath, gut feelings) and what relationships say outside (tone, pacing, cues).</p>
-          <blockquote>"Instead of drowning in sensations and emotions, you start to understand them and respond more flexibly."</blockquote>
-        </article>
-        <article class="relia__step">
-          <span class="relia__letter">I</span>
-          <h3>Identity</h3>
-          <p>We honor who you are, not just what you do — rewriting old nervous system narratives
-             ("I'm too much," "I can't cope") in a more compassionate, neurobiologically accurate way.</p>
-        </article>
-        <article class="relia__step relia__step--wide">
-          <span class="relia__letter">A</span>
-          <h3>Attunement &amp; Integration</h3>
-          <p>We weave it into daily life — practicing attuned responses within yourself and between
-             you and others, so new nervous system patterns are reinforced in real moments: at home,
-             at school, at work, and in relationships.</p>
-          <blockquote>"RELIA coaching turns relational, embodied, moment-to-moment experiences into lasting
-             changes in how the nervous system reads the world, responds to stress, and experiences
-             self and others."</blockquote>
-        </article>
-      </div>
-
-      <div class="tomatis">
-        <h3>Neuro-auditory support — Tomatis® listening &amp; bone conduction</h3>
-        <p>
-          As part of RELIA coaching, some clients benefit from a neuro-auditory program called
-          <strong>Tomatis®</strong>. This method uses carefully filtered music and sound delivered
-          through both the ears and bone conduction to stimulate the ear–brain connection — improving
-          how the nervous system processes sound, balance, and body cues, which directly supports
-          interoception and regulation.
-        </p>
-        <p>
-          For nervous systems that are highly sensitive, easily overloaded by sound, or disconnected
-          from internal cues, Tomatis® listening provides an additional, gentle way to reorganize
-          sensory input so the body can feel safer and more settled from the inside out.
-        </p>
-      </div>
-
-      <aside class="callout">
-        <h3>Who this is for</h3>
-        <p>
-          Adults living with chronic stress or dysregulation, parents who want to co-regulate better,
-          and helping professionals seeking a deeper, neuroscience-grounded framework. Offered hybrid —
-          in person in California and online nationwide.
-        </p>
-        <a class="btn btn--primary" href="#contact">Ask about RELIA coaching</a>
-      </aside>
-    </div>
-  </section>
-
   <!-- ======================= ENERGY TREE ======================= -->
   <section class="tree" id="approach">
     <div class="tree__sticky">
@@ -286,7 +183,7 @@
       <div class="tree__intro" id="treeIntro">
         <p class="tree__eyebrow">The Approach</p>
         <h2>One nervous system.<br>Many pathways.</h2>
-        <p>Scroll to orbit the neuron — each pathway and method circles into focus, then makes way for the next.</p>
+        <p>Scroll to orbit the neuron — each capacity and method circles into focus, then makes way for the next.</p>
         <span class="tree__scrollhint" aria-hidden="true">▾</span>
       </div>
       <div class="tree__cards" id="treeCards"><!-- cards injected by script.js --></div>
@@ -309,10 +206,10 @@
       <p class="section__eyebrow">About</p>
       <h2>Sanette Louwrens, OTR/L</h2>
       <p class="section__lead">
-        Sanette is an occupational therapist and neurointegrative coach who helps families and adults
-        move from chronic survival mode toward a more regulated, connected way of living. Her work
-        connects sensory processing, emotion regulation, relational safety, and symbolic capacity —
-        because the nervous system never works in pieces.
+        Sanette is an occupational therapist who helps children and families move from chronic
+        survival mode toward a more regulated, connected way of living. Her work connects sensory
+        processing, emotion regulation, relational safety, and symbolic capacity — because the
+        nervous system never works in pieces.
       </p>
       <ul class="creds">
         <li><strong>OTR/L</strong> — NBCOT® #994802 · CBOT #10729</li>
@@ -333,8 +230,8 @@
       <p class="section__eyebrow">Contact</p>
       <h2>Start the conversation.</h2>
       <p class="section__lead">
-        Tell Sanette a little about you or your child. There's no obligation — just a first step
-        toward a nervous system that feels safer.
+        Tell Sanette a little about your child. There's no obligation — just a first step toward a
+        nervous system that feels safer.
       </p>
 
       <div class="contact__grid">
@@ -351,8 +248,8 @@
             <span>I'm interested in</span>
             <select name="service" required>
               <option value="" disabled selected>Choose one…</option>
-              <option value="Occupational Therapy (California)">Occupational Therapy for my child (California)</option>
-              <option value="RELIA Neurointegrative Coaching">RELIA Neurointegrative Coaching (nationwide)</option>
+              <option value="Occupational Therapy (California)">Occupational therapy for my child (California)</option>
+              <option value="Tomatis® listening">Tomatis® neuro-auditory listening</option>
               <option value="Not sure yet">Not sure yet — help me figure it out</option>
             </select>
           </label>
@@ -375,7 +272,7 @@
             <a href="mailto:sanette@sensoriumtherapy.com">sanette@sensoriumtherapy.com</a>
           </p>
           <p class="contact__note">
-            OT services: California only · RELIA coaching: hybrid, nationwide<br>
+            Occupational therapy: California only.<br>
             Pricing shared on inquiry.
           </p>
         </div>
@@ -393,9 +290,9 @@
       <div class="footer__col">
         <h4>Explore</h4>
         <a href="#parents">For Parents</a>
-        <a href="#coaching">RELIA Coaching</a>
         <a href="#approach">The Approach</a>
         <a href="#about">About Sanette</a>
+        <a href="#contact">Contact</a>
       </div>
       <div class="footer__col">
         <h4>Resources</h4>

@@ -41,14 +41,12 @@ const CONFIG = {
   });
 })();
 
-/* The entry pop-up (choose OT or RELIA, with the in-development
-   disclaimer) now lives with the tab controller below. */
-
 /* ----------------------- CARD DATA -----------------------
-   Two tab-specific decks, EIGHT cards each so the helix geometry is
-   identical and switching tabs only repaints the card text.
-   OT deck = occupational therapy (children); RELIA deck = coaching.  */
-const CARDS_OT = [
+   Eight cards on the helix: OT pillars (sensory, emotional,
+   relational, symbolic) plus supporting methods (DIR Floortime®,
+   Interactive Metronome®, Tomatis®, developmental approach).
+   Fixed count keeps the helix geometry stable.                    */
+const CARDS = [
   {
     tag: "ot", tagLabel: "OT · For Children", title: "Symbolic Capacity",
     body: "Imagination, language, and play. When the nervous system feels organized, a child can represent feelings with ideas instead of behaviors — the highest reach of development.",
@@ -84,44 +82,6 @@ const CARDS_OT = [
   },
 ];
 
-const CARDS_RELIA = [
-  {
-    tag: "relia", tagLabel: "RELIA · A", title: "Attunement & Integration",
-    body: "We weave new patterns into daily life — at home, work, and in relationships — so regulation becomes who you are, not something you perform.",
-    quote: "Lasting change in how the nervous system reads the world, responds to stress, and experiences self and others.",
-  },
-  {
-    tag: "relia", tagLabel: "RELIA · I", title: "Identity",
-    body: "We honor who you are, not just what you do — rewriting stories like “I'm too much” or “I can't cope” in a more compassionate, neurobiologically accurate way.",
-  },
-  {
-    tag: "method", tagLabel: "Method · Exploring", title: "Sandplay",
-    body: "A tray of sand and miniature figures offers a free and protected space for the psyche to externalize and integrate what words can't reach — an approach Sanette is integrating.",
-  },
-  {
-    tag: "relia", tagLabel: "RELIA · L", title: "Listening",
-    body: "We slow down enough to hear the body inside — tension, breath, gut feelings — and relationships outside: tone, pacing, cues.",
-    quote: "Instead of drowning in sensations and emotions, you start to understand them and respond more flexibly.",
-  },
-  {
-    tag: "method", tagLabel: "Method · Tomatis®", title: "Neuro-Auditory Listening",
-    body: "Tomatis® delivers filtered music through the ears and bone conduction, retuning the ear–brain connection so the nervous system reads sound, balance, and inner cues more clearly.",
-  },
-  {
-    tag: "method", tagLabel: "Method · Exploring", title: "HeartMath®",
-    body: "Heart-rate-variability biofeedback that trains coherence between heart and brain, nudging the autonomic system toward calm — an approach Sanette is exploring to support interoception.",
-  },
-  {
-    tag: "relia", tagLabel: "RELIA · E", title: "Embodied",
-    body: "We work through the body, not just the head — movement, posture, breath, and play create new regulated states, strengthening interoception: the felt sense of what's happening inside.",
-  },
-  {
-    tag: "relia", tagLabel: "RELIA · R", title: "Relational",
-    body: "The taproot. A consistent, non-shaming, attuned relationship where your nervous system can finally relax and feel seen.",
-    quote: "Without relational safety, the nervous system will not risk new experiences.",
-  },
-];
-
 /* ----------------------- RENDER CARDS ----------------------- */
 function cardHTML(c) {
   return `
@@ -134,16 +94,15 @@ function cardHTML(c) {
 const desktopWrap = document.getElementById("treeCards");
 const mobileWrap = document.getElementById("treeCardsMobile");
 
-// Build EIGHT empty card shells once (count stays fixed so the helix
-// geometry never changes); paintCards() fills them per active tab.
-const N_SHELLS = CARDS_OT.length;            // 8
+// Build the card shells once and fill them (single-purpose site: no tabs).
 function buildShells(wrap) {
   if (!wrap) return;
-  for (let i = 0; i < N_SHELLS; i++) {
+  CARDS.forEach((c) => {
     const el = document.createElement("article");
     el.className = "tree-card";
+    el.innerHTML = cardHTML(c);
     wrap.appendChild(el);
-  }
+  });
 }
 buildShells(desktopWrap);
 buildShells(mobileWrap);
@@ -151,110 +110,28 @@ buildShells(mobileWrap);
 const cardEls = desktopWrap ? Array.from(desktopWrap.children) : [];
 const mobileEls = mobileWrap ? Array.from(mobileWrap.children) : [];
 
-function paintCards(tab) {
-  const deck = tab === "relia" ? CARDS_RELIA : CARDS_OT;
-  deck.forEach((c, i) => {
-    if (cardEls[i]) cardEls[i].innerHTML = cardHTML(c);
-    if (mobileEls[i]) mobileEls[i].innerHTML = cardHTML(c);
-  });
-}
-
-/* ============================================================
-   TABS — Occupational Therapy vs RELIA.
-   data-tab on <html> drives section visibility (CSS), the hero
-   copy, and which 8-card deck fills the neuron. Lowest-footprint:
-   one attribute + a text swap; the entry pop-up sets the first tab.
-   ============================================================ */
-const TAB_HERO = {
-  ot: {
-    eyebrow: "Occupational Therapy · For Children · California",
-    title: 'When your child\'s world feels <span class="hl">too much</span> — we help it make sense.',
-    sub: "Neuro-focused occupational therapy that works with your child's nervous system, not against it — building regulation through sensory integration, emotional safety, attuned relationships, and play.",
-  },
-  relia: {
-    eyebrow: "RELIA NeuroIntegration · For Adults · Hybrid & Nationwide",
-    title: 'Find your way back to <span class="hl">safe enough</span>.',
-    sub: "RELIA coaching strengthens the vagus–body–brain connection through attuned relationship, body-based experience, and reflective integration — so daily life feels more regulated, connected, and yours.",
-  },
-};
-
-function setTab(tab, opts) {
-  tab = tab === "relia" ? "relia" : "ot";
-  opts = opts || {};
-  document.documentElement.setAttribute("data-tab", tab);
-  if (opts.persist) { try { sessionStorage.setItem("tab", tab); } catch {} }
-
-  const e = document.getElementById("heroEyebrow");
-  const t = document.getElementById("heroTitle");
-  const s = document.getElementById("heroSub");
-  if (e) e.textContent = TAB_HERO[tab].eyebrow;
-  if (t) t.innerHTML = TAB_HERO[tab].title;
-  if (s) s.textContent = TAB_HERO[tab].sub;
-
-  paintCards(tab);
-
-  document.querySelectorAll("[data-choose]").forEach((b) => {
-    b.setAttribute("aria-pressed", b.getAttribute("data-choose") === tab ? "true" : "false");
-  });
-
-  if (opts.preselect) {
-    const sel = document.querySelector('#contactForm select[name="service"]');
-    if (sel) sel.value = tab === "relia" ? "RELIA Neurointegrative Coaching" : "Occupational Therapy (California)";
-  }
-}
-
-// initial tab: saved this session, else default OT (not persisted, so the
-// entry pop-up still appears until the visitor actually chooses).
-(function () {
-  let saved = null;
-  try { saved = sessionStorage.getItem("tab"); } catch {}
-  setTab(saved === "relia" ? "relia" : "ot");
-})();
-
-// any [data-choose] control switches tabs (entry buttons, nav toggle,
-// hero cards, nav links). Optional data-go="<id>" scrolls there after.
-document.addEventListener("click", (ev) => {
-  const el = ev.target.closest("[data-choose]");
-  if (!el) return;
-  ev.preventDefault();
-  setTab(el.getAttribute("data-choose"), { persist: true, preselect: true });
-
-  const modal = document.getElementById("entryModal");
-  if (modal && modal.classList.contains("is-open")) {
-    modal.classList.remove("is-open");
-    setTimeout(() => modal.remove(), 300);
-  }
-
-  const go = el.getAttribute("data-go");
-  if (go) {
-    const target = document.getElementById(go);
-    if (target) requestAnimationFrame(() => target.scrollIntoView({ behavior: "smooth" }));
-  }
-});
-
-/* ===== ENTRY POP-UP — choose a path on first load this session ===== */
-(function initEntry() {
-  const modal = document.getElementById("entryModal");
+/* ===== UNDER-CONSTRUCTION NOTICE — once per browser session ===== */
+(function initNotice() {
+  const modal = document.getElementById("noticeModal");
   if (!modal) return;
-  let chosen = null;
-  try { chosen = sessionStorage.getItem("tab"); } catch {}
-  if (chosen) { modal.remove(); return; }   // already picked this session
+  let seen = false;
+  try { seen = sessionStorage.getItem("noticeSeen") === "1"; } catch {}
+  if (seen) { modal.remove(); return; }
 
-  const dismiss = () => {                    // backdrop/Esc → keep default OT, remember
-    setTab("ot", { persist: true });
+  const close = () => {
     modal.classList.remove("is-open");
+    try { sessionStorage.setItem("noticeSeen", "1"); } catch {}
     setTimeout(() => modal.remove(), 300);
     document.removeEventListener("keydown", onKey);
   };
-  const onKey = (e) => { if (e.key === "Escape") dismiss(); };
-  const backdrop = modal.querySelector(".notice__backdrop");
-  if (backdrop) backdrop.addEventListener("click", dismiss);
+  const onKey = (e) => { if (e.key === "Escape") close(); };
+  modal.querySelector(".notice__btn").addEventListener("click", close);
+  modal.querySelector(".notice__backdrop").addEventListener("click", close);
   document.addEventListener("keydown", onKey);
 
   requestAnimationFrame(() => {
     modal.classList.add("is-open");
-    const first = modal.querySelector("[data-choose]");
-    if (first) first.focus();
+    modal.querySelector(".notice__btn").focus();
   });
 })();
 
