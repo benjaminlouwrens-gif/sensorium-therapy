@@ -49,36 +49,36 @@ const CONFIG = {
 const CARDS = [
   {
     tag: "ot", tagLabel: "OT · For Children", title: "Symbolic Capacity",
-    body: "Imagination, language, and play. When the nervous system feels organized, a child can represent feelings with ideas instead of behaviors — the highest reach of development.",
+    body: "Imagination, language, and play. When the nervous system feels organized, a child can represent feelings with ideas instead of behaviors, which is a major developmental step.",
   },
   {
     tag: "method", tagLabel: "Approach", title: "Developmental Approach",
-    body: "The through-line: meeting your child at their current developmental capacities and gently building the next one — never drilling isolated skills out of context.",
+    body: "We meet your child at their current developmental level and gently build the next one. We do not drill isolated skills out of context.",
   },
   {
     tag: "method", tagLabel: "Method · Tomatis®", title: "Neuro-Auditory Listening",
-    body: "Carefully filtered music delivered through the ears and the bones of the head gently retunes the ear–brain connection — organizing sound, balance, and inner body cues.",
+    body: "Carefully filtered music is delivered through the ears and the bones of the head to support the ear–brain connection, helping organize sound, balance, and inner body cues.",
   },
   {
     tag: "method", tagLabel: "Method · Interactive Metronome®", title: "Rhythm & Timing",
-    body: "Interactive Metronome® training sharpens motor planning, attention, and the brain's internal clock — helping the body sequence and time itself with more ease.",
+    body: "Interactive Metronome® training supports motor planning, attention, and the brain's internal clock, helping the body sequence and time itself with more ease.",
   },
   {
     tag: "method", tagLabel: "Method · DIR", title: "DIR Floortime®",
-    body: "As a certified DIR Floortime® Expert, Sanette follows your child's lead through play to climb developmental ladders, building capacities inside warm, attuned relationship.",
+    body: "As a certified DIR Floortime® Expert, Sanette follows your child's lead through play to build developmental capacities inside a warm, attuned relationship.",
   },
   {
     tag: "ot", tagLabel: "OT · For Children", title: "Sensory Integration",
-    body: "Touch, movement, sound, and gravity must become one coherent picture. Through play-based sensory work, scattered input starts to make sense — and the world feels less overwhelming.",
+    body: "Touch, movement, sound, and gravity can start to feel like one clear picture. Through play-based sensory work, scattered input becomes easier to understand, and the world can feel less overwhelming.",
   },
   {
     tag: "ot", tagLabel: "OT · For Children", title: "Emotional Regulation",
-    body: "Big feelings need a body that can hold them. We build the capacity to ride waves of emotion — up into excitement, down into calm — without tipping into overwhelm.",
+    body: "Big feelings need a body that can hold them. We build the ability to move through excitement and calm without tipping into overwhelm.",
   },
   {
     tag: "ot", tagLabel: "OT · For Children", title: "Relational Safety",
-    body: "Co-regulation comes first. A child borrows calm from a safe adult long before they can make their own. Attachment-informed care makes every other capacity possible.",
-    quote: "Relational safety first — everything else grows from there.",
+    body: "Co-regulation comes first. A child borrows calm from a safe adult long before they can make their own. Attachment-informed care supports every other capacity.",
+    quote: "Relational safety first. Everything else grows from there.",
   },
 ];
 
