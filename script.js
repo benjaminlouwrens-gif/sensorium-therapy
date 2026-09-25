@@ -17,6 +17,132 @@ const CONFIG = {
   formspreeId: "",
 };
 
+/* ----------------------- SITE MODE -----------------------
+   The two public sites share the same design and interaction engine.
+   Their hostname selects the copy and brand; a query override keeps
+   local previews easy to verify without changing deployment settings. */
+const SITE_MODE = (() => {
+  const query = new URLSearchParams(window.location.search).get("site");
+  if (query === "relia" || query === "therapy") return query;
+  return /relia/i.test(window.location.hostname) ? "relia" : "therapy";
+})();
+const IS_RELIA = SITE_MODE === "relia";
+
+function replaceMeta(name, content) {
+  const meta = document.querySelector(`meta[name="${name}"]`);
+  if (meta) meta.setAttribute("content", content);
+}
+
+function applyReliaMode() {
+  if (!IS_RELIA) return;
+
+  document.documentElement.dataset.siteMode = "relia";
+  document.title = "RELIA NeuroIntegration | Neurointegrative Coaching with Sanette Louwrens";
+  replaceMeta("description", "Neurointegrative coaching for adults. RELIA combines relationship, body awareness, and reflection to support greater regulation, connection, and self-understanding. Hybrid in California and online nationwide.");
+
+  const brand = document.querySelector(".nav__brand");
+  if (brand) {
+    brand.querySelector("img").src = "assets/logo-relia.png";
+    brand.querySelector("img").alt = "RELIA NeuroIntegration logo";
+    brand.querySelector("span").innerHTML = "RELIA <em>NeuroIntegration</em>";
+  }
+  const navLinks = document.querySelectorAll(".nav__links a");
+  if (navLinks[0]) { navLinks[0].href = "#coaching"; navLinks[0].textContent = "The Coaching"; }
+
+  const hero = document.querySelector(".hero__inner");
+  if (hero) hero.innerHTML = `
+    <p class="hero__eyebrow">RELIA NeuroIntegration · For Adults · Hybrid &amp; Nationwide</p>
+    <h1>Find your way back to <span class="hl">safe enough</span>.</h1>
+    <p class="hero__sub">
+      RELIA coaching combines attuned relationship, body awareness, and reflective integration to
+      support greater regulation, connection, and self-understanding.
+    </p>
+    <div class="hero__cta">
+      <a class="btn btn--primary btn--call-lg" href="#contact">Start the Conversation</a>
+      <a class="btn btn--call btn--call-lg" href="#approach">See How It Works</a>
+    </div>
+    <p class="hero__hint">A neurointegrative coaching practice with Sanette Louwrens, OTR/L.</p>`;
+
+  const coaching = document.getElementById("parents");
+  if (coaching) {
+    coaching.id = "coaching";
+    coaching.innerHTML = `
+      <div class="section__inner">
+        <div class="coaching__head">
+          <img class="coaching__logo" src="assets/logo-relia.png" alt="RELIA NeuroIntegration logo">
+          <div>
+            <p class="section__eyebrow">For Adults · Hybrid &amp; Nationwide</p>
+            <h2>RELIA NeuroIntegration Coaching</h2>
+          </div>
+        </div>
+        <p class="section__lead">
+          RELIA is a neurointegrative coaching process that brings together relationship, embodied
+          experiences, and reflection. The goal is to help you better notice, understand, and respond
+          to what is happening within yourself and in daily life.
+        </p>
+        <div class="relia">
+          <article class="relia__step"><span class="relia__letter">R</span><h3>Relational</h3><p>A consistent, attuned relationship creates the foundation for growth, reflection, and change.</p></article>
+          <article class="relia__step"><span class="relia__letter">E</span><h3>Embodied</h3><p>We work through lived experience, not just conversation. Movement, breath, posture, sensory experiences, and play can help build greater body awareness.</p></article>
+          <article class="relia__step"><span class="relia__letter">L</span><h3>Listening</h3><p>We practice noticing internal experiences such as tension, energy, and breath, while becoming more aware of cues in relationships and everyday interactions.</p></article>
+          <article class="relia__step"><span class="relia__letter">I</span><h3>Identity</h3><p>We explore how past experiences shape self-understanding and create space for more flexible, compassionate narratives.</p></article>
+          <article class="relia__step relia__step--wide"><span class="relia__letter">A</span><h3>Attunement &amp; Integration</h3><p>Insights are connected to everyday life so new patterns can be practiced in relationships, work, and daily routines.</p></article>
+        </div>
+        <div class="tomatis">
+          <h3>Neuro-Auditory Support</h3>
+          <p>Some clients choose to incorporate <strong>Tomatis®</strong> listening as part of their coaching experience.</p>
+          <p>Tomatis® uses filtered music and sound delivered through air and bone conduction. Many people use it to support listening, attention, sensory processing, and self-awareness. For individuals who feel overwhelmed by sensory input or disconnected from internal cues, it can provide an additional avenue for exploration within the coaching process.</p>
+        </div>
+        <aside class="callout">
+          <h3>Who this is for</h3>
+          <p>Adults navigating chronic stress, parents seeking stronger co-regulation skills, and helping professionals interested in a relationship-centered, neuroscience-informed approach. Available in person in California and online nationwide.</p>
+          <a class="btn btn--primary" href="#contact">Ask About RELIA Coaching</a>
+        </aside>
+      </div>`;
+  }
+
+  const treeIntro = document.querySelector(".tree__intro");
+  if (treeIntro) treeIntro.querySelector("p:last-of-type").textContent = "Scroll to orbit the neuron — each step of RELIA and each supporting method circles into focus, then makes way for the next.";
+
+  const about = document.querySelector(".section--about .section__inner");
+  if (about) about.innerHTML = `
+    <p class="section__eyebrow">About</p>
+    <h2>Sanette Louwrens, OTR/L</h2>
+    <p class="section__lead">Sanette is an occupational therapist and neurointegrative coach. Through RELIA, she helps adults explore the connections between relationships, lived experience, body awareness, and personal growth.</p>
+    <ul class="creds">
+      <li><strong>OTR/L</strong> — NBCOT® #994802 · CBOT #10729</li>
+      <li><strong>Tomatis® Level 4 Consultant</strong></li>
+      <li><strong>DIR Floortime® Expert</strong></li>
+      <li><strong>SIPT / EASI</strong></li>
+      <li><strong>Circle of Security Parenting™ Facilitator</strong></li>
+      <li><strong>NAPA / UC Davis Infant-Parent Mental Health Program Alumna</strong></li>
+      <li><strong>NMT Phase 1 Trained</strong></li>
+    </ul>
+    <p class="about__note">RELIA NeuroIntegration is a coaching practice. Coaching is not occupational therapy, psychotherapy, or medical treatment and is not a substitute for licensed care.</p>`;
+
+  const contact = document.querySelector(".section--contact .section__inner");
+  if (contact) {
+    contact.querySelector("h2").textContent = "Start the Conversation";
+    contact.querySelector(".section__lead").textContent = "Share a little about yourself and what brings you here. We'll start with a conversation.";
+    const select = contact.querySelector("select[name=service]");
+    if (select) select.innerHTML = `<option value="" disabled selected>Choose one…</option><option value="RELIA Neurointegrative Coaching">RELIA Neurointegrative Coaching</option><option value="Tomatis® Neuro-Auditory Listening">Tomatis® Neuro-Auditory Listening</option><option value="Not Sure Yet">Not Sure Yet</option>`;
+    const aside = contact.querySelector(".contact__aside");
+    if (aside) aside.innerHTML = `<h3>Prefer email?</h3><p>Contact Sanette directly at:</p><a class="btn btn--call btn--call-lg" href="mailto:sanette@sensoriumtherapy.com"><span>Email Sanette</span></a><p class="contact__email"><a href="mailto:sanette@sensoriumtherapy.com">sanette@sensoriumtherapy.com</a></p><p class="contact__note">Hybrid services available in California and online nationwide.<br>Pricing is shared during inquiry.</p>`;
+  }
+
+  const footer = document.querySelector(".footer");
+  if (footer) {
+    footer.querySelector(".footer__brand img").src = "assets/logo-relia.png";
+    footer.querySelector(".footer__brand img").alt = "RELIA NeuroIntegration logo";
+    footer.querySelector(".footer__brand p").innerHTML = "RELIA NeuroIntegration<br><span>relational · embodied · integrated</span>";
+    footer.querySelector(".footer__col a").textContent = "The Coaching";
+    footer.querySelector(".footer__col a").href = "#coaching";
+    footer.querySelector(".footer__col:nth-of-type(3)").innerHTML = `<h4>Resources</h4><a href="https://www.tomatis.com" target="_blank" rel="noopener">About Tomatis®</a><a href="https://directory.icdl.com" target="_blank" rel="noopener">DIR® Directory</a>`;
+    footer.querySelector(".footer__legal").innerHTML = `© <span id="year"></span> RELIA NeuroIntegration · Sanette Louwrens, OTR/L (NBCOT® #994802 · CBOT #10729). Messages submitted through this site are sent directly to Sanette and are never sold or shared. RELIA coaching is educational and informational in nature and is not a substitute for individualized medical, mental health, or therapeutic care.`;
+  }
+}
+
+applyReliaMode();
+
 /* ============================================================
    THEME TOGGLE — dark mode affects the light sections only.
    The neuron section is always dark and is untouched by this.
@@ -46,7 +172,7 @@ const CONFIG = {
    relational, symbolic) plus supporting methods (DIR Floortime®,
    Interactive Metronome®, Tomatis®, developmental approach).
    Fixed count keeps the helix geometry stable.                    */
-const CARDS = [
+const THERAPY_CARDS = [
   {
     tag: "ot", tagLabel: "OT · For Children", title: "Symbolic Capacity",
     body: "Imagination, language, and play. When the nervous system feels organized, a child can represent feelings with ideas instead of behaviors, which is a major developmental step.",
@@ -81,6 +207,19 @@ const CARDS = [
     quote: "Relational safety first. Everything else grows from there.",
   },
 ];
+
+const RELIA_CARDS = [
+  { tag: "relia", tagLabel: "RELIA · A", title: "Attunement & Integration", body: "Practice new patterns in daily life so regulation becomes more accessible and sustainable." },
+  { tag: "relia", tagLabel: "RELIA · I", title: "Identity", body: "Explore self-understanding with greater flexibility, compassion, and awareness." },
+  { tag: "method", tagLabel: "Method · Exploring", title: "Sandplay", body: "A creative, symbolic process that can support reflection and self-discovery. Currently being explored as part of RELIA." },
+  { tag: "relia", tagLabel: "RELIA · L", title: "Listening", body: "Develop awareness of internal experiences and interpersonal cues." },
+  { tag: "method", tagLabel: "Method · Tomatis®", title: "Neuro-Auditory Listening", body: "Filtered music delivered through air and bone conduction as part of the Tomatis® method." },
+  { tag: "method", tagLabel: "Method · Exploring", title: "HeartMath®", body: "Heart-rate variability biofeedback that may support awareness of physiological states. Currently being explored as part of RELIA." },
+  { tag: "relia", tagLabel: "RELIA · E", title: "Embodied", body: "Movement, breath, posture, sensory experiences, and play can deepen body awareness." },
+  { tag: "relia", tagLabel: "RELIA · R", title: "Relational", body: "A consistent, attuned relationship provides the foundation for the process." },
+];
+
+const CARDS = IS_RELIA ? RELIA_CARDS : THERAPY_CARDS;
 
 /* ----------------------- RENDER CARDS ----------------------- */
 function cardHTML(c) {
